@@ -1,3 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="com.example.pl_image_downloader">
+
+    <application>
+        <service android:name=".services.DownloadService"
+            android:exported="false" />
+    </application>
 </manifest>
