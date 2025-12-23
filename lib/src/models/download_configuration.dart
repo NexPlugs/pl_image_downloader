@@ -1,13 +1,12 @@
-import 'download_mode.dart';
-import 'mime_type.dart';
+import 'package:pl_image_downloader/src/models/download_dictionary.dart';
+
+import '../enum/download_mode.dart';
+import '../enum/mime_type.dart';
 import 'notification_config.dart';
 
 /// Download Configuration
 /// This class is used to store the download configuration.
 class DownloadConfiguration {
-  /// The directory to save the download file.
-  final String? saveDirectory;
-
   /// The name of the download file.
   final String? saveName;
 
@@ -26,24 +25,27 @@ class DownloadConfiguration {
   /// The retry count.
   final int retryCount;
 
+  /// The download directory.
+  final DownloadDirectory downloadDirectory;
+
   DownloadConfiguration({
-    this.saveDirectory,
     this.saveName,
     this.notificationConfig,
     this.isExternalStorage = false,
     this.downloadMode = DownloadMode.normal,
     this.mimeType = MimeType.imageJpeg,
     this.retryCount = 3,
+    this.downloadDirectory = DownloadDirectory.downloads,
   });
 
   /// Convert the download configuration to a JSON object.
   Map<String, dynamic> toJson() {
     return {
-      'saveDirectory': saveDirectory,
       'saveName': saveName,
-      'isExternalStorage': isExternalStorage,
-      'downloadMode': downloadMode.name,
       'mimeType': mimeType.name,
+      'downloadMode': downloadMode.name,
+      'isExternalStorage': isExternalStorage,
+      'downloadDirectory': downloadDirectory.directoryName,
     };
   }
 }

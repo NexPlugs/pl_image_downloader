@@ -1,5 +1,5 @@
 import 'download_info.dart';
-import 'download_status.dart';
+import '../enum/download_status.dart';
 
 /// Download Task
 /// This class is used to store the download task.
