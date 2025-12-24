@@ -16,7 +16,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import androidx.core.net.toUri
-import com.example.pl_image_downloader.models.DownloadDirectory
+import com.example.pl_image_downloader.models.DownloadConfiguration
+import com.example.pl_image_downloader.models.enum.DownloadDirectory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -40,6 +41,7 @@ class Downloader(
     }
 
 
+
     private val downloadManager: DownloadManager =  context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
     /** * The download task associated with this downloader. */
@@ -52,6 +54,8 @@ class Downloader(
     /** * The current status of the download task. */
     val status: DownloadStatus get() { return downloadTask.downloadStatus }
 
+    /** * The global download configuration. */
+    val downloadConfig: DownloadConfiguration get() { return DownloadGlobal.downloadConfig }
     val dictionary: DownloadDirectory get() { return downloadInfo.dictionary }
 
     /** * Coroutine scope for managing download operations. */
@@ -91,12 +95,14 @@ class Downloader(
     /** * End Region: Broadcast Receiver */
 
     fun getRequest(): DownloadManager.Request {
+
         val request = DownloadManager.Request(downloadTask.url.toUri())
             .setTitle(downloadTask.fileName)
-            .setDestinationInExternalPublicDir(dictionary.toEnv(), downloadTask.fileName)
+            .setDestinationInExternalPublicDir(downloadConfig.downloadDirectory.toEnv(), downloadTask.fileName)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
+            .setMimeType(downloadConfig.mimeType.typeName)
 
         return request
     }
@@ -148,7 +154,6 @@ class Downloader(
                     val status =  cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
                     if(status == DownloadManager.STATUS_FAILED
                         || status == DownloadManager.STATUS_SUCCESSFUL) {
-
 
                         downloadTask = downloadTask.copy(
                             downloadStatus = status.fromStatusCode()

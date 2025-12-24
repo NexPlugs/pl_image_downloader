@@ -1,4 +1,4 @@
-package com.example.pl_image_downloader.models
+package com.example.pl_image_downloader.models.enum
 
 import android.os.Environment
 

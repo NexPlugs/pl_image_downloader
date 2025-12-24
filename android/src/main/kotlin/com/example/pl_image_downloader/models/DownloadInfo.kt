@@ -1,5 +1,7 @@
 package com.example.pl_image_downloader.models
 
+import com.example.pl_image_downloader.models.enum.DownloadDirectory
+
 
 /**
  * DownloadInfo

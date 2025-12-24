@@ -7,3 +7,5 @@ package com.example.pl_image_downloader.utils
 
 /** Maximum number of concurrent downloads allowed. */
 const val MAX_CONCURRENT_DOWNLOADS = 4
+
+const val BASE_ERROR_TAG = "PLImageDownloader_Error"

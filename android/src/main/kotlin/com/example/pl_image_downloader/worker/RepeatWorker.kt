@@ -4,6 +4,12 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 
+/**
+ * RepeatWorker
+ * A worker that performs repeated tasks in the background.
+ * @param context The application context.
+ * @param params The worker parameters.
+ */
 class RepeatWorker(
     context: Context,
     params: WorkerParameters
