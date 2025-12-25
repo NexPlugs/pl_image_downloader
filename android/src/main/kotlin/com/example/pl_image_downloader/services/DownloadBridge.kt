@@ -21,8 +21,11 @@ class DownloadBridge(
 
 
     /** Invokes a progress update on the Flutter side. */
-    fun invokeProgress(progress: Int) {
-        val callBack = DownloadCallBack.progress(progress)
+    fun invokeProgress(progress: Int, id: Int) {
+        val callBack = DownloadCallBack.Progress(
+            value = progress,
+            id = id
+        )
         channel.invokeMethod(ChannelTag.EVENT_BRIDGE, callBack.toMap())
     }
 

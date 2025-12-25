@@ -41,5 +41,4 @@ sealed class DownloadCallBack {
         }
     }
 
-
 }
