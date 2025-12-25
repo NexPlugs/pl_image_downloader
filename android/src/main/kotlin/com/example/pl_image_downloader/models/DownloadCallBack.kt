@@ -12,26 +12,34 @@ enum class CallBack(val method: String) {
 
 /**
  * DownloadCallBack
- * A data class representing a callback event during a download process.
- *
- * @property callBack The type of callback event.
- * @property value An optional value associated with the callback event.
+ * A sealed class representing different types of download callbacks.
+ * It contains subclasses for specific callback types, such as progress updates.
+ * @property callBack The type of callback.
+ * @property value The value associated with the callback.
  */
-data class DownloadCallBack(
-    val callBack: CallBack,
-    val value: Any?
-) {
-    companion object {
-        /** Extension function to create a DownloadCallBack for progress updates. */
-        fun progress(progress: Int): DownloadCallBack {
-            return DownloadCallBack(CallBack.PROGRESS, progress)
+sealed class DownloadCallBack {
+    abstract val callBack: CallBack?
+    abstract val value: Any?
+
+    /**
+     * Progress
+     * A data class representing a progress update during a download.
+     *
+     * @property id The identifier for the download.
+     */
+    data class Progress(
+        override val callBack: CallBack = CallBack.PROGRESS,
+        override val value: Int,
+        val id: Int,
+    ) : DownloadCallBack() {
+        fun toMap(): Map<String, Any?> {
+            return mapOf(
+                "method" to callBack.method,
+                "value" to value,
+                "id" to id,
+            )
         }
     }
 
-    fun toMap(): Map<String, Any?> {
-        return mapOf(
-            "method" to callBack.method,
-            "value" to value
-        )
-    }
+
 }
