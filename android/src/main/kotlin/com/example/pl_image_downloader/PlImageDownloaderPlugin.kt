@@ -4,16 +4,16 @@ import android.util.Log
 import com.example.pl_image_downloader.services.DownloadHandler
 import com.example.pl_image_downloader.utils.BASE_ERROR_TAG
 import com.example.pl_image_downloader.utils.ChannelTag
+import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.MethodCall
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 
 /** PlImageDownloaderPlugin */
 class PlImageDownloaderPlugin :
     FlutterPlugin,
-    MethodCallHandler {
+    ActivityAware {
 
     // The MethodChannel that will the communication between Flutter and native Android
     //
@@ -52,10 +52,10 @@ class PlImageDownloaderPlugin :
 
         val context = activity.applicationContext
 
-        flutterEngine ?: return
+        val engine = flutterEngine ?: return
 
         MethodChannel(
-            flutterEngine.dartExecutor.binaryMessenger,
+            engine.dartExecutor.binaryMessenger,
             ChannelTag.SERVICE_CHANNEL
         ).setMethodCallHandler { call , result ->
             Log.d(TAG, "Method call received: ${call.method} with arguments: ${call.arguments}")
@@ -83,8 +83,5 @@ class PlImageDownloaderPlugin :
     }
 
     private fun cleanup() { }
-
-
-    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) { }
 
 }

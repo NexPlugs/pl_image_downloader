@@ -10,4 +10,7 @@ object ChannelTag {
     const val INIT_DOWNLOAD_CONFIG = "init_download_config"
 
     const val DOWNLOAD = "download"
+
+    /** Channel tag for event bridge communication. */
+    const val EVENT_BRIDGE = "event_bridge"
 }

@@ -17,7 +17,7 @@ class DownloadTask {
   final String? downloadDirectoryResult;
 
   /// The progress of the download task.
-  final double? progress;
+  final int? progress;
 
   /// The status of the download task.
   final DownloadStatus status;
@@ -34,5 +34,9 @@ class DownloadTask {
   /// Create a download task from a download info.
   factory DownloadTask.fromInfo({required DownloadInfo info}) {
     return DownloadTask(id: info.id, url: info.url, fileName: info.fileName);
+  }
+
+  DownloadTask copyWith({int? progress, DownloadStatus? status}) {
+    return DownloadTask(id: id, url: url, fileName: fileName);
   }
 }

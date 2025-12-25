@@ -14,10 +14,34 @@ buildscript {
     }
 }
 
+def engineVersion = {
+    def properties = new Properties()
+    def localPropertiesFile = new File(rootProject.projectDir, "local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.withReader("UTF-8") { reader ->
+            properties.load(reader)
+        }
+    }
+    def flutterSdkPath = properties.getProperty("flutter.sdk")
+    if (flutterSdkPath == null) {
+        flutterSdkPath = System.getenv("FLUTTER_ROOT")
+    }
+    if (flutterSdkPath != null) {
+        def engineVersionFile = new File(flutterSdkPath, "bin/internal/engine.version")
+        if (engineVersionFile.exists()) {
+            return engineVersionFile.text.trim()
+        }
+    }
+    return null
+}()
+
 allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://storage.googleapis.com/download.flutter.io")
+        }
     }
 }
 
@@ -66,7 +90,10 @@ android {
 
         implementation("androidx.core:core-ktx:1.17.0")
         implementation("androidx.appcompat:appcompat:1.7.1")
-        implementation("androidx.work:work-runtime-ktx:2.9.1")
-    }
+        implementation("androidx.work:work-runtime-ktx:2.11.0")
 
+        if (engineVersion != null) {
+            debugCompileOnly("io.flutter:flutter_embedding_debug:1.0.0-$engineVersion")
+        }
+    }
 }

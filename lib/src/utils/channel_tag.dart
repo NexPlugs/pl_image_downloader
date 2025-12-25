@@ -9,4 +9,8 @@ class ChannelTag {
   static const String initDownloadConfig = "init_download_config";
 
   static const String download = "download";
+
+  static const String downloadProgress = "download_progress";
+
+  static const String eventBridge = "event_bridge";
 }

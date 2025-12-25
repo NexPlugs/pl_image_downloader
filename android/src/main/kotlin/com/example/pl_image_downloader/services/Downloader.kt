@@ -36,6 +36,7 @@ class Downloader(
     val context: Context,
     val downloadInfo: DownloadInfo
 ) {
+
     companion object {
         const val TAG = "Downloader"
     }
@@ -67,10 +68,8 @@ class Downloader(
         override fun onReceive(context: Context?, intent: android.content.Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
             val taskId = downloadTask.id
-            if((id == null || id == -1L) || taskId == null) return
-            if(id == taskId) {
-                resolveDownloadStatus()
-            }
+            if(( id == null || id == -1L) || taskId == null ) return
+            if( id == taskId ) resolveDownloadStatus()
         }
     }
 
@@ -100,9 +99,9 @@ class Downloader(
             .setTitle(downloadTask.fileName)
             .setDestinationInExternalPublicDir(downloadConfig.downloadDirectory.toEnv(), downloadTask.fileName)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setMimeType(downloadConfig.mimeType.typeName)
             .setAllowedOverMetered(true)
             .setAllowedOverRoaming(true)
-            .setMimeType(downloadConfig.mimeType.typeName)
 
         return request
     }
@@ -173,7 +172,6 @@ class Downloader(
 
                     return progress
                 }
-
                 cursor.close()
             }
             return 0
