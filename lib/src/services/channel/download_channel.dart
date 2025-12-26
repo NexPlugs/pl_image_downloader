@@ -1,7 +1,9 @@
 import 'package:flutter/services.dart';
+import 'package:pl_image_downloader/src/models/download_info.dart';
 import 'package:pl_image_downloader/src/utils/logger.dart';
 
 import '../../models/download_configuration.dart';
+import '../../models/download_result.dart';
 import '../../utils/channel_tag.dart';
 
 /// Download Channel
@@ -35,6 +37,26 @@ class DownloadChannel {
         ChannelTag.initDownloadConfig,
         downloadConfiguration.toJson(),
       );
+    } catch (e) {
+      Logger.e(tag, e.toString());
+      throw Exception(e);
+    }
+  }
+
+  ///Download
+  ///This method is used to download a file.
+  ///@param info The download info.
+  static Future<DownloadResult?> download(DownloadInfo info) async {
+    try {
+      final result = await _methodChannel.invokeMethod(
+        ChannelTag.download,
+        info.toJson(),
+      );
+      if (result is Map<String, dynamic>) {
+        return DownloadResult.fromJson(result);
+      }
+
+      return null;
     } catch (e) {
       Logger.e(tag, e.toString());
       throw Exception(e);

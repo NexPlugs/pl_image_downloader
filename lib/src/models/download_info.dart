@@ -18,4 +18,8 @@ class DownloadInfo {
   factory DownloadInfo.create({required String url, String? fileName}) {
     return DownloadInfo(url: url, fileName: fileName, id: UniqueKey().hashCode);
   }
+
+  Map<String, dynamic> toJson() {
+    return {"id": id, "url": url, "fileName": fileName};
+  }
 }

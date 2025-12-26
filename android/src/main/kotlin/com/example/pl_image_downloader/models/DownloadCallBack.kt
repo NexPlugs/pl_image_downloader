@@ -30,7 +30,7 @@ sealed class DownloadCallBack {
     data class Progress(
         override val callBack: CallBack = CallBack.PROGRESS,
         override val value: Int,
-        val id: Int,
+        val id: Long,
     ) : DownloadCallBack() {
         fun toMap(): Map<String, Any?> {
             return mapOf(

@@ -33,8 +33,9 @@ class StreamDownloadChannel {
   }
 
   /// Listen Event Bridge
-
-  /// Listen Event Bridge
+  /// This method is used to listen to the event bridge.
+  /// @return A future that completes when the event bridge is listened to.
+  /// @throws Exception if the event bridge fails to listen to.
   Future<void> listenEventBridge() async {
     try {
       _serviceChannel.setMethodCallHandler((MethodCall methodCall) async {

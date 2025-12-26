@@ -4,10 +4,17 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import com.example.pl_image_downloader.models.DownloadInfo
+import com.example.pl_image_downloader.models.DownloadStatus
+import com.example.pl_image_downloader.models.enum.DownloadException
 import com.example.pl_image_downloader.models.fromDownloadConfiguration
 import com.example.pl_image_downloader.utils.ChannelTag
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
 
 class DownloadHandler(val activity: Activity) {
+
+    var bridge: DownloadBridge? = null
 
     companion object {
         const val TAG = "DownloadHandler"
@@ -33,7 +40,7 @@ class DownloadHandler(val activity: Activity) {
      * @param argument The arguments passed from Flutter, expected to be a Map.
      * @param context The Android context.
      */
-    private fun initializeDownloadConfig(argument: Any, context: Context) {
+    private fun initializeDownloadConfig(argument: Any, context: Context, flutterEngine: FlutterEngine) {
         if (argument !is Map<*, *>) return
 
         val config = argument.fromDownloadConfiguration()
@@ -42,6 +49,47 @@ class DownloadHandler(val activity: Activity) {
         DownloadGlobal.downloadConfig = config
         serviceSetUp = true
 
+        bridge = DownloadBridge(flutterEngine)
+    }
+
+    /**
+     * Handles the download process based on the provided arguments from Flutter.
+     * @param argument The arguments passed from Flutter, expected to be a Map.
+     * @param context The Android context.
+     * @param result The MethodChannel.Result to send results back to Flutter.
+     * @param errorLogBack A callback function to log errors back to Flutter.
+     */
+    private fun handleDownload(
+        argument: Map<*, *>,
+        context: Context,
+        result: MethodChannel.Result,
+        errorLogBack: (String) -> Unit
+    ) {
+        val downloadInfo = DownloadInfo.fromMap(argument)
+        Log.d(TAG, "Starting download with info: $downloadInfo")
+
+        val downloader = Downloader(context, downloadInfo)
+            .setDownloadCallBack { task ->
+                val id = task.id ?: return@setDownloadCallBack
+                when(task.downloadStatus) {
+                    DownloadStatus.IN_PROGRESS -> {
+                        val progress = task.progress
+                        bridge?.invokeProgress(progress, id)
+                    }
+                    DownloadStatus.COMPLETED -> {
+                        Log.d(TAG, "Download completed for task ID: $id")
+                        task.result ?: return@setDownloadCallBack
+
+                        result.success(task.result.toMap())
+                    }
+                    DownloadStatus.FAILED -> {
+                        Log.e(TAG, "Download failed for task ID: $id")
+                        errorLogBack.invoke(task.exception?.code ?: DownloadException.UNKNOWN.code)
+                    }
+                    else -> { }
+                }
+            }
+        downloader.executeDownload()
     }
 
     /**
@@ -54,8 +102,9 @@ class DownloadHandler(val activity: Activity) {
         method: String,
         argument: Any,
         context: Context,
-
-        errorLogBack: (String) -> Unit
+        flutterEngine: FlutterEngine,
+        result: MethodChannel.Result,
+        errorLogBack: (String) -> Unit,
     ) {
         if(!serviceSetUp && method != ChannelTag.INIT_DOWNLOAD_CONFIG) {
             val message =  "Service not setup. Please initialize download configuration first."
@@ -67,9 +116,25 @@ class DownloadHandler(val activity: Activity) {
 
         when(method) {
             ChannelTag.INIT_DOWNLOAD_CONFIG -> {
-                initializeDownloadConfig(argument, context)
+                initializeDownloadConfig(argument, context, flutterEngine)
             }
-            ChannelTag.DOWNLOAD -> {}
+            ChannelTag.DOWNLOAD -> {
+                if (argument !is Map<*, *>) {
+                    val message = "Invalid argument for download method. Expected a Map."
+                    Log.w(TAG, message)
+                    errorLogBack.invoke(message)
+                    return
+                }
+
+                handleDownload(
+                    argument = argument,
+                    context = context,
+                    result = result,
+                    errorLogBack = errorLogBack
+                )
+
+
+            }
             else -> {
                 Log.w(TAG, "Unknown method call: $method")
             }

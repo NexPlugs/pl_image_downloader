@@ -17,7 +17,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import androidx.core.net.toUri
 import com.example.pl_image_downloader.models.DownloadConfiguration
+import com.example.pl_image_downloader.models.DownloadResult
 import com.example.pl_image_downloader.models.enum.DownloadDirectory
+import com.example.pl_image_downloader.models.enum.DownloadException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -34,14 +36,12 @@ const val DOWNLOAD_DELAY = 1000L
  */
 class Downloader(
     val context: Context,
-    val downloadInfo: DownloadInfo
+    downloadInfo: DownloadInfo
 ) {
 
     companion object {
         const val TAG = "Downloader"
     }
-
-
 
     private val downloadManager: DownloadManager =  context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
@@ -50,14 +50,22 @@ class Downloader(
         set(value) {
             Log.d(TAG, "Download task updated: $value")
             field = value
+            downloadCallBack?.invoke(field)
         }
 
     /** * The current status of the download task. */
     val status: DownloadStatus get() { return downloadTask.downloadStatus }
 
+    /** * Callback function to notify about download task updates. */
+    private var downloadCallBack: ((DownloadTask) -> Unit)? = null
+    fun setDownloadCallBack(callBack: (DownloadTask) -> Unit): Downloader {
+        this.downloadCallBack = callBack
+        return this
+    }
+
     /** * The global download configuration. */
     val downloadConfig: DownloadConfiguration get() { return DownloadGlobal.downloadConfig }
-    val dictionary: DownloadDirectory get() { return downloadInfo.dictionary }
+    val dictionary: DownloadDirectory get() { return downloadConfig.downloadDirectory }
 
     /** * Coroutine scope for managing download operations. */
     private val downloadScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -92,12 +100,11 @@ class Downloader(
     }
 
     /** * End Region: Broadcast Receiver */
-
     fun getRequest(): DownloadManager.Request {
 
         val request = DownloadManager.Request(downloadTask.url.toUri())
             .setTitle(downloadTask.fileName)
-            .setDestinationInExternalPublicDir(downloadConfig.downloadDirectory.toEnv(), downloadTask.fileName)
+            .setDestinationInExternalPublicDir(dictionary.toEnv(), downloadTask.fileName)
             .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             .setMimeType(downloadConfig.mimeType.typeName)
             .setAllowedOverMetered(true)
@@ -118,13 +125,13 @@ class Downloader(
         registerReceiver()
 
         downloadScope.launch {
-            val request = getRequest()
-            val downloadId = downloadManager.enqueue(request)
+            getRequest()
 
             downloadTask = downloadTask.copy(
-                id = downloadId,
                 downloadStatus = DownloadStatus.IN_PROGRESS
             )
+
+            val downloadId = downloadTask.id ?: return@launch
 
             while (status.isInProgress()) {
 
@@ -137,7 +144,7 @@ class Downloader(
         }
     }
 
-
+    /** * Retrieves the current download progress for the given task ID. */
     @SuppressLint("Range")
     private fun getProcess(taskId: Long): Int {
         runCatching {
@@ -198,10 +205,29 @@ class Downloader(
                 when(status) {
                     DownloadManager.STATUS_SUCCESSFUL -> {
                         Log.d(TAG, "Download completed successfully for task $taskId")
+
+                        downloadTask = downloadTask.copy(
+                            progress = 100,
+                            downloadStatus = DownloadStatus.COMPLETED,
+
+                            result = DownloadResult(
+                                fileName = downloadTask.fileName,
+                                dictionary = "", //TODO: get the actual directory
+                                path =  "" //TODO: get the actual path
+                            )
+                        )
+
                         unregisterReceiver()
                     }
                     DownloadManager.STATUS_FAILED -> {
                         Log.e(TAG, "Download failed for task $taskId. Reason code: $reason")
+
+                        val exception = DownloadException.fromReasonDownload(reason)
+                        downloadTask = downloadTask.copy(
+                            exception = exception,
+                            downloadStatus = DownloadStatus.FAILED,
+                        )
+
                         unregisterReceiver()
                     }
                 }

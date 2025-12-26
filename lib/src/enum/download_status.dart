@@ -31,4 +31,8 @@ enum DownloadStatus {
       orElse: () => throw Exception('Download status not found: $name'),
     );
   }
+
+  /// Get if the task should be cleared after completion.
+  bool get clearTaskAfterCompletion =>
+      this == completed || this == failed || this == canceled;
 }

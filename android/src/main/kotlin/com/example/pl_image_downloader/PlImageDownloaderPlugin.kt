@@ -64,8 +64,11 @@ class PlImageDownloaderPlugin :
                 argument = call.arguments,
                 context = context,
                 errorLogBack = { errorMessage ->
-                    result.error(BASE_ERROR_TAG, errorMessage, null)
-                }
+                    //TODO: Improve error handling mechanism
+                },
+
+
+                flutterEngine = engine
             )
         }
     }

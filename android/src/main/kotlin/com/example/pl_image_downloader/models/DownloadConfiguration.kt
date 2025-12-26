@@ -41,6 +41,6 @@ fun Map<*, *>.fromDownloadConfiguration(): DownloadConfiguration {
         mimeType = MimeTypes.fromValue(this["mimeType"] as String),
         notificationConfig = null, // Handle NotificationConfig conversion if needed
         retryCount = this["retryCount"] as Int,
-        downloadDirectory = DownloadDirectory.valueOf(this["downloadDirectory"] as String)
+        downloadDirectory = DownloadDirectory.fromString(this["downloadDirectory"] as String)
     )
 }

@@ -21,7 +21,7 @@ class DownloadBridge(
 
 
     /** Invokes a progress update on the Flutter side. */
-    fun invokeProgress(progress: Int, id: Int) {
+    fun invokeProgress(progress: Int, id: Long) {
         val callBack = DownloadCallBack.Progress(
             value = progress,
             id = id

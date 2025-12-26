@@ -2,6 +2,10 @@ package com.example.pl_image_downloader.models.enum
 
 import android.os.Environment
 
+/**
+ * DownloadDirectory
+ * An enumeration representing various download directories.
+ */
 enum class DownloadDirectory(val directoryName: String) {
     MUSIC("music"),
     PICTURES("pictures"),
@@ -15,8 +19,11 @@ enum class DownloadDirectory(val directoryName: String) {
 
 
     companion object {
-        fun fromString(name: String): DownloadDirectory? {
-            return entries.find { it.directoryName.equals(name, ignoreCase = true) }
+        fun fromString(name: String?): DownloadDirectory {
+            if (name == null) {
+                return default()
+            }
+            return entries.find { it.directoryName.equals(name, ignoreCase = true) } ?: default()
         }
 
         fun default(): DownloadDirectory {

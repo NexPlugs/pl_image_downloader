@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:pl_image_downloader/src/models/download_configuration.dart';
 import 'package:pl_image_downloader/src/models/download_info.dart';
+import 'package:pl_image_downloader/src/models/download_result.dart';
 import 'package:pl_image_downloader/src/models/download_task.dart';
 
 import '../models/download_event_bridge.dart';
@@ -27,29 +28,64 @@ class DownloadService {
   ///The value is the stream controller of the download task.
   final Map<int, StreamController<DownloadTask>> _downloadTaskControllers = {};
   final Map<int, DownloadTask> _downloadTasks = {};
+  final Map<int, Completer<DownloadResult>> _downloadTaskCompleters = {};
 
   bool _isSetUp = false;
 
   ///Get the stream of the download task.
   ///@param id The id of the download task.
   ///@return The stream of the download task.
-  Stream<DownloadTask> getStream(int id) async* {
-    if (!_downloadTaskControllers.containsKey(id)) {
-      _downloadTaskControllers[id] = StreamController<DownloadTask>();
+  Stream<DownloadTask?> getStream(int id) async* {
+    if (_downloadTaskControllers.containsKey(id)) {
+      yield* _downloadTaskControllers[id]!.stream;
     }
 
-    yield* _downloadTaskControllers[id]!.stream;
+    yield null;
   }
 
   DownloadTask? getTask(int id) => _downloadTasks[id];
 
+  ///Listen to the progress of the download task.
+  ///@param id The id of the download task.
+  ///@param onProgress The callback function to handle the progress of the download task.
+  void listenProgress(int id, void Function(int progress) onProgress) {
+    getStream(id).listen((task) {
+      if (task == null) {
+        Logger.e(tag, "[ListenProgress] Download task not found");
+        return;
+      }
+      onProgress(task.progress ?? 0);
+    });
+  }
+
   ///Update the download task.
   ///@param id The id of the download task.
-  void updateTask(int id, DownloadTask task) {
+  void _updateTask(int id, DownloadTask task) {
     if (_downloadTasks.containsKey(id)) {
       _downloadTasks[id] = task;
     }
     _downloadTaskControllers[id]?.add(task);
+  }
+
+  ///Clear the download task.
+  ///@param id The id of the download task.
+  void _clearTask(int id) {
+    try {
+      _downloadTasks.remove(id);
+
+      final controller = _downloadTaskControllers[id];
+      if (controller != null && !controller.isClosed) {
+        controller.close();
+        _downloadTaskControllers.remove(id);
+      }
+
+      final completer = _downloadTaskCompleters[id];
+      if (completer != null && !completer.isCompleted) {
+        _downloadTaskCompleters.remove(id);
+      }
+    } catch (e) {
+      Logger.e(tag, "[ClearTask] Error: $e");
+    }
   }
 
   ///Init the download service
@@ -58,7 +94,7 @@ class DownloadService {
   ///@throws Exception if the download service fails to initialize.
   Future<void> init() async {
     if (_isSetUp) {
-      Logger.i(tag, "Download service already initialized");
+      Logger.i(tag, "[Init] Download service already initialized");
       return;
     }
 
@@ -68,17 +104,7 @@ class DownloadService {
       await StreamDownloadChannel.setCallBack((eventBridge) {
         switch (eventBridge) {
           case DownloadProgressEventBridge():
-            final id = eventBridge.id;
-            if (id == null) {
-              Logger.e(tag, "Download progress event bridge id is null");
-              return;
-            }
-            final task = getTask(id);
-            if (task == null) {
-              Logger.e(tag, "Download task not found");
-              return;
-            }
-            updateTask(id, task.copyWith(progress: eventBridge.progress));
+            _handleDownloadProgressEventBridge(eventBridge);
             break;
           default:
             break;
@@ -87,26 +113,74 @@ class DownloadService {
 
       _isSetUp = true;
     } catch (e) {
-      Logger.e(tag, e.toString());
+      Logger.e(tag, "[Init] Error: $e");
       throw Exception(e);
     }
   }
 
-  Future<void> download({required DownloadInfo info}) async {
+  ///Download
+  ///This method is used to download a file.
+  ///@param fileName The file name.
+  ///@param url The url of the file.
+  ///@return A future that completes when the file is downloaded.
+  ///@throws Exception if the file fails to download.
+  Future<DownloadResult?> download({
+    String? fileName,
+    required String url,
+  }) async {
     if (!_isSetUp) {
-      Logger.e(tag, "Download service not initialized");
+      Logger.e(tag, "[Download] Download service not initialized");
       throw Exception("Download service not initialized");
     }
 
-    final downloadTask = DownloadTask.fromInfo(info: info);
+    final info = DownloadInfo.create(url: url, fileName: fileName);
 
+    // Create a download task
+    final downloadTask = DownloadTask.fromInfo(info: info);
     _downloadTaskControllers[downloadTask.id]?.add(downloadTask);
 
+    // Create a completer for the download task
+    final completer = Completer<DownloadResult>();
+    _downloadTaskCompleters[downloadTask.id] = completer;
     try {
-      //TODO: Implement the download logic
+      // Download the file
+      final downloadResult = await DownloadChannel.download(info);
+      completer.complete(downloadResult);
     } catch (e) {
-      Logger.e(tag, e.toString());
+      Logger.e(tag, "[Download] Error: $e");
       throw Exception(e);
+    } finally {
+      _clearTask(downloadTask.id);
+    }
+
+    return await completer.future;
+  }
+
+  /// Region === Event Bridge handler ===
+
+  void _handleDownloadProgressEventBridge(
+    DownloadProgressEventBridge eventBridge,
+  ) {
+    final id = eventBridge.id;
+    if (id == null) {
+      Logger.e(
+        tag,
+        "[HandleDownloadProgressEventBridge] Download progress event bridge id is null",
+      );
+      return;
+    }
+    final task = getTask(id);
+    if (task == null) {
+      Logger.e(tag, "Download task not found");
+      return;
+    }
+    final status = task.status;
+    if (status.clearTaskAfterCompletion) {
+      _clearTask(id);
+    } else {
+      _updateTask(id, task.copyWith(progress: eventBridge.progress));
     }
   }
+
+  /// End Region === Event Bridge handler ===
 }
