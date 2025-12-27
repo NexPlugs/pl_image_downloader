@@ -42,7 +42,6 @@ class StreamDownloadChannel {
         if (methodCall.method != ChannelTag.eventBridge) return;
 
         final json = methodCall.arguments as Map<String, dynamic>;
-
         final eventBridge = DownloadEventBridge.fromValue(json);
 
         _callBack?.call(eventBridge);

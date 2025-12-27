@@ -38,9 +38,14 @@ class DownloadHandler(val activity: Activity) {
     /**
      * Initializes the download configuration based on the provided arguments from Flutter.
      * @param argument The arguments passed from Flutter, expected to be a Map.
-     * @param context The Android context.
+     * @param result The MethodChannel.Result to send results back to Flutter.
+     * @param flutterEngine The FlutterEngine instance for setting up the DownloadBridge.
      */
-    private fun initializeDownloadConfig(argument: Any, context: Context, flutterEngine: FlutterEngine) {
+    private fun initializeDownloadConfig(
+        argument: Any,
+        result: MethodChannel.Result,
+        flutterEngine: FlutterEngine
+    ) {
         if (argument !is Map<*, *>) return
 
         val config = argument.fromDownloadConfiguration()
@@ -50,6 +55,8 @@ class DownloadHandler(val activity: Activity) {
         serviceSetUp = true
 
         bridge = DownloadBridge(flutterEngine)
+
+        result.success(true)
     }
 
     /**
@@ -74,7 +81,8 @@ class DownloadHandler(val activity: Activity) {
                 when(task.downloadStatus) {
                     DownloadStatus.IN_PROGRESS -> {
                         val progress = task.progress
-                        bridge?.invokeProgress(progress, id)
+                        Log.d(TAG, "Download in progress for task ID: $id, progress: $progress%")
+                        bridge?.invokeProgress(progress = progress, id = id)
                     }
                     DownloadStatus.COMPLETED -> {
                         Log.d(TAG, "Download completed for task ID: $id")
@@ -116,7 +124,7 @@ class DownloadHandler(val activity: Activity) {
 
         when(method) {
             ChannelTag.INIT_DOWNLOAD_CONFIG -> {
-                initializeDownloadConfig(argument, context, flutterEngine)
+                initializeDownloadConfig(argument, result, flutterEngine)
             }
             ChannelTag.DOWNLOAD -> {
                 if (argument !is Map<*, *>) {
@@ -132,12 +140,19 @@ class DownloadHandler(val activity: Activity) {
                     result = result,
                     errorLogBack = errorLogBack
                 )
-
-
             }
-            else -> {
-                Log.w(TAG, "Unknown method call: $method")
-            }
+            else -> { Log.w(TAG, "Unknown method call: $method") }
         }
+    }
+
+    /**
+     * Disposes of the DownloadHandler instance and its resources.
+     */
+    fun dispose() {
+        bridge?.disposeScope()
+        bridge = null
+
+        serviceSetUp = false
+        INSTANCE = null
     }
 }

@@ -45,6 +45,7 @@ class PlImageDownloaderPlugin :
 
     // ----------------- ActivityAware -----------------
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        Log.d(TAG, "Plugin attached to activity.")
         activityBinding = binding
         val activity = binding.activity
 
@@ -66,9 +67,8 @@ class PlImageDownloaderPlugin :
                 errorLogBack = { errorMessage ->
                     //TODO: Improve error handling mechanism
                 },
-
-
-                flutterEngine = engine
+                flutterEngine = engine,
+                result = result
             )
         }
     }
@@ -85,6 +85,13 @@ class PlImageDownloaderPlugin :
         cleanup()
     }
 
-    private fun cleanup() { }
+    /** Cleans up resources when the plugin is detached from the activity. */
+    private fun cleanup() {
+        Log.d(TAG, "Plugin detached from activity.")
+        activityBinding = null
+
+        service?.dispose()
+        service = null
+    }
 
 }

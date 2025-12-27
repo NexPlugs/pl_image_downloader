@@ -4,7 +4,7 @@ enum DownloadMode {
   /// Normal download mode.
   normal(name: "normal"),
 
-  /// Running background service download mode.
+  /// Running background service download mode. This mode only workds on android
   runningBackgroundService(name: "runningBackgroundService");
 
   final String name;

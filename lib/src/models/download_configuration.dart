@@ -45,6 +45,8 @@ class DownloadConfiguration {
       'mimeType': mimeType.name,
       'downloadMode': downloadMode.name,
       'isExternalStorage': isExternalStorage,
+      'retryCount': retryCount,
+      'notificationConfig': notificationConfig?.toJson(),
       'downloadDirectory': downloadDirectory.directoryName,
     };
   }

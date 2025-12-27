@@ -99,7 +99,10 @@ class DownloadService {
     }
 
     try {
+      Logger.i(tag, "[Init] Initializing download service");
       await DownloadChannel.initDownloadConfig(_downloadConfiguration!);
+
+      Logger.i(tag, "[Init] Download service initialized");
 
       await StreamDownloadChannel.setCallBack((eventBridge) {
         switch (eventBridge) {
@@ -110,6 +113,8 @@ class DownloadService {
             break;
         }
       }).listenEventBridge();
+
+      Logger.i(tag, "[Init] Event bridge set");
 
       _isSetUp = true;
     } catch (e) {

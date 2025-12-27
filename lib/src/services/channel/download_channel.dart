@@ -21,7 +21,7 @@ class DownloadChannel {
 
   ///Method Channel
   static const MethodChannel _methodChannel = MethodChannel(
-    ChannelTag.download,
+    ChannelTag.serviceChannel,
   );
 
   ///Init Download Config
