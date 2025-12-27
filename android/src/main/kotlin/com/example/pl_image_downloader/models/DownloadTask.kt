@@ -8,6 +8,7 @@ import com.example.pl_image_downloader.models.enum.DownloadException
  */
 data class DownloadTask(
     val id: Long? = null,
+    val enqueueId: Long? = null,
     val url: String,
     val destinationPath: String = "",
     val fileName: String,

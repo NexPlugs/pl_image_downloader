@@ -125,9 +125,10 @@ class Downloader(
         registerReceiver()
 
         downloadScope.launch {
-            downloadManager.enqueue(getRequest())
+            val enqueueId = downloadManager.enqueue(getRequest())
 
             downloadTask = downloadTask.copy(
+                enqueueId = enqueueId,
                 downloadStatus = DownloadStatus.IN_PROGRESS
             )
 
@@ -135,7 +136,7 @@ class Downloader(
 
             while (status.isInProgress()) {
 
-                val progress = getProcess(downloadId)
+                val progress = getProcess(enqueueId)
                 Log.d(TAG, "Download progress for task ${downloadTask.id}: $progress%")
 
                 downloadTask = downloadTask.copy(progress = progress)
@@ -146,9 +147,9 @@ class Downloader(
 
     /** * Retrieves the current download progress for the given task ID. */
     @SuppressLint("Range")
-    private fun getProcess(taskId: Long): Int {
+    private fun getProcess(enqueueID: Long): Int {
         runCatching {
-            val query = DownloadManager.Query().setFilterById(taskId)
+            val query = DownloadManager.Query().setFilterById(enqueueID)
             downloadManager.query(query)?.use { cursor ->
                 if(cursor.moveToFirst()) {
                     val downloadBytes =
@@ -183,15 +184,16 @@ class Downloader(
             }
             return 0
         }.getOrElse {
-            Log.e(TAG, "Error getting download progress for task $taskId: ${it.message}")
+            Log.e(TAG, "Error getting download progress for task $enqueueID: ${it.message}")
             return 0
         }
     }
 
     /** * Resolves the current download status by querying the DownloadManager. */
     private fun resolveDownloadStatus() {
+        val enqueueID = downloadTask.enqueueId ?: return
         val taskId = downloadTask.id ?: return
-        val query = DownloadManager.Query().setFilterById(taskId)
+        val query = DownloadManager.Query().setFilterById(enqueueID)
 
         downloadManager.query(query)?.use { cursor ->
             if(cursor.moveToFirst()) {
@@ -204,7 +206,7 @@ class Downloader(
 
                 when(status) {
                     DownloadManager.STATUS_SUCCESSFUL -> {
-                        Log.d(TAG, "Download completed successfully for task $taskId")
+                        Log.d(TAG, "Download completed successfully for task $enqueueID-$taskId")
 
                         downloadTask = downloadTask.copy(
                             progress = 100,
@@ -220,7 +222,7 @@ class Downloader(
                         unregisterReceiver()
                     }
                     DownloadManager.STATUS_FAILED -> {
-                        Log.e(TAG, "Download failed for task $taskId. Reason code: $reason")
+                        Log.e(TAG, "Download failed for task $enqueueID-$taskId. Reason code: $reason")
 
                         val exception = DownloadException.fromReasonDownload(reason)
                         downloadTask = downloadTask.copy(
