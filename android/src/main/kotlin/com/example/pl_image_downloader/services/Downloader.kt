@@ -125,7 +125,7 @@ class Downloader(
         registerReceiver()
 
         downloadScope.launch {
-            getRequest()
+            downloadManager.enqueue(getRequest())
 
             downloadTask = downloadTask.copy(
                 downloadStatus = DownloadStatus.IN_PROGRESS
