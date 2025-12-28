@@ -72,32 +72,39 @@ class DownloadHandler(val activity: Activity) {
         result: MethodChannel.Result,
         errorLogBack: (String) -> Unit
     ) {
-        val downloadInfo = DownloadInfo.fromMap(argument)
-        Log.d(TAG, "Starting download with info: $downloadInfo")
+        try {
+            val downloadInfo = DownloadInfo.fromMap(argument)
+            Log.d(TAG, "Starting download with info: $downloadInfo")
 
-        val downloader = Downloader(context, downloadInfo)
-            .setDownloadCallBack { task ->
-                val id = task.id ?: return@setDownloadCallBack
-                when(task.downloadStatus) {
-                    DownloadStatus.IN_PROGRESS -> {
-                        val progress = task.progress
-                        Log.d(TAG, "Download in progress for task ID: $id, progress: $progress%")
-                        bridge?.invokeProgress(progress = progress, id = id)
-                    }
-                    DownloadStatus.COMPLETED -> {
-                        Log.d(TAG, "Download completed for task ID: $id")
-                        task.result ?: return@setDownloadCallBack
+            val downloader = Downloader(context, downloadInfo)
+                .setDownloadCallBack { task ->
+                    val id = task.id ?: return@setDownloadCallBack
+                    when(task.downloadStatus) {
+                        DownloadStatus.IN_PROGRESS -> {
+                            val progress = task.progress
+                            Log.d(TAG, "Download in progress for task ID: $id, progress: $progress%")
+                            bridge?.invokeProgress(progress = progress, id = id)
+                        }
+                        DownloadStatus.COMPLETED -> {
+                            task.result ?: return@setDownloadCallBack
+                            Log.d(TAG, "Download completed for task ID: $id")
 
-                        result.success(task.result.toMap())
+                            result.success(task.result.toMap())
+                        }
+                        DownloadStatus.FAILED -> {
+                            Log.e(TAG, "Download failed for task ID: $id")
+                            errorLogBack.invoke(task.exception?.code ?: DownloadException.UNKNOWN.code)
+                        }
+                        else -> { }
                     }
-                    DownloadStatus.FAILED -> {
-                        Log.e(TAG, "Download failed for task ID: $id")
-                        errorLogBack.invoke(task.exception?.code ?: DownloadException.UNKNOWN.code)
-                    }
-                    else -> { }
                 }
-            }
-        downloader.executeDownload()
+
+            downloader.executeDownload()
+        } catch (e: Exception) {
+            val message = "Error initiating download: ${e.message}"
+            Log.e(TAG, message)
+            errorLogBack.invoke(message)
+        }
     }
 
     /**

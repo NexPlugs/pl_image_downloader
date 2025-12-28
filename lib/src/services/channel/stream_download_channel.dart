@@ -36,14 +36,21 @@ class StreamDownloadChannel {
   /// This method is used to listen to the event bridge.
   /// @return A future that completes when the event bridge is listened to.
   /// @throws Exception if the event bridge fails to listen to.
-  Future<void> listenEventBridge() async {
+  void listenEventBridge() {
     try {
       _serviceChannel.setMethodCallHandler((MethodCall methodCall) async {
         if (methodCall.method != ChannelTag.eventBridge) return;
+        Logger.i(
+          _tag,
+          "[ListenEventBridge] Method call: ${methodCall.method} Arguments: ${methodCall.arguments} type: ${methodCall.arguments.runtimeType}",
+        );
+        if (methodCall.arguments is! Map) return;
+        final json = Map<String, dynamic>.from(methodCall.arguments);
+        Logger.i(_tag, "[ListenEventBridge] Json: $json");
 
-        final json = methodCall.arguments as Map<String, dynamic>;
         final eventBridge = DownloadEventBridge.fromValue(json);
 
+        Logger.i(_tag, "[ListenEventBridge] Event bridge: $eventBridge");
         _callBack?.call(eventBridge);
       });
     } catch (e) {

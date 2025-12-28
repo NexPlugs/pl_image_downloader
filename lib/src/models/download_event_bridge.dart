@@ -1,5 +1,7 @@
 import 'download_call_back.dart';
 
+import '../utils/dynamic_extensions.dart';
+
 /// Download Event Bridge
 /// This class is used to define the download event bridge.
 abstract class DownloadEventBridge {
@@ -27,9 +29,13 @@ class DownloadProgressEventBridge extends DownloadEventBridge {
   DownloadProgressEventBridge({this.id, required this.progress});
 
   static DownloadProgressEventBridge fromValue(Map<String, dynamic> json) {
-    return DownloadProgressEventBridge(
-      id: int.tryParse(json['id'] as String),
-      progress: json['value'] as int,
-    );
+    try {
+      return DownloadProgressEventBridge(
+        id: DynamicParser.parseInt(json['id']),
+        progress: DynamicParser.parseInt(json['value']) ?? 0,
+      );
+    } catch (e) {
+      throw Exception('DownloadProgressEventBridge not found: $e');
+    }
   }
 }

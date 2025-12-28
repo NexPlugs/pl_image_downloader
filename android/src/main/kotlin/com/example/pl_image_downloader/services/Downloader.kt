@@ -132,7 +132,7 @@ class Downloader(
                 downloadStatus = DownloadStatus.IN_PROGRESS
             )
 
-            val downloadId = downloadTask.id ?: return@launch
+            downloadTask.id ?: return@launch
 
             while (status.isInProgress()) {
 

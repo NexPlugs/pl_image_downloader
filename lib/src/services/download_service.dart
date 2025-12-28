@@ -104,7 +104,9 @@ class DownloadService {
 
       Logger.i(tag, "[Init] Download service initialized");
 
-      await StreamDownloadChannel.setCallBack((eventBridge) {
+      StreamDownloadChannel.setCallBack((eventBridge) {
+        Logger.i(tag, "[Init] Event bridge: $eventBridge");
+
         switch (eventBridge) {
           case DownloadProgressEventBridge():
             _handleDownloadProgressEventBridge(eventBridge);
@@ -180,6 +182,10 @@ class DownloadService {
       return;
     }
     final status = task.status;
+    Logger.i(
+      tag,
+      "[HandleDownloadProgressEventBridge] Progress: ${eventBridge.progress}",
+    );
     if (status.clearTaskAfterCompletion) {
       _clearTask(id);
     } else {
