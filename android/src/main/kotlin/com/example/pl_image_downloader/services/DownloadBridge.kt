@@ -1,5 +1,6 @@
 package com.example.pl_image_downloader.services
 
+import android.util.Log
 import com.example.pl_image_downloader.models.DownloadCallBack
 import com.example.pl_image_downloader.utils.ChannelTag
 import io.flutter.embedding.engine.FlutterEngine
@@ -34,6 +35,7 @@ class DownloadBridge(
 
     /** Invokes a progress update on the Flutter side. */
     fun invokeProgress(progress: Int, id: Long) {
+        Log.i(TAG, "Invoking progress: $progress for download ID: $id")
         val callBack = DownloadCallBack.Progress(
             value = progress,
             id = id
@@ -46,6 +48,7 @@ class DownloadBridge(
 
     /** Disposes the coroutine scope to clean up resources. */
     fun disposeScope() {
+        Log.i(TAG, "Disposing DownloadBridge scope.")
         scope.cancel()
     }
 

@@ -87,7 +87,9 @@ class DownloadHandler(val activity: Activity) {
                         }
                         DownloadStatus.COMPLETED -> {
                             task.result ?: return@setDownloadCallBack
+
                             Log.d(TAG, "Download completed for task ID: $id")
+                            bridge?.invokeProgress(progress = 100, id = id)
 
                             result.success(task.result.toMap())
                         }

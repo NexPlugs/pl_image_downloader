@@ -144,6 +144,7 @@ class DownloadService {
 
     // Create a download task
     final downloadTask = DownloadTask.fromInfo(info: info);
+    _downloadTasks[downloadTask.id] = downloadTask;
     _downloadTaskControllers[downloadTask.id]?.add(downloadTask);
 
     // Create a completer for the download task
@@ -178,7 +179,7 @@ class DownloadService {
     }
     final task = getTask(id);
     if (task == null) {
-      Logger.e(tag, "Download task not found");
+      Logger.e(tag, "Download task not found id: $id");
       return;
     }
     final status = task.status;

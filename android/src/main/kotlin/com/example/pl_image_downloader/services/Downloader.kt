@@ -75,7 +75,8 @@ class Downloader(
     private val localReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: android.content.Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1L)
-            val taskId = downloadTask.id
+            val taskId = downloadTask.enqueueId
+
             if(( id == null || id == -1L) || taskId == null ) return
             if( id == taskId ) resolveDownloadStatus()
         }
@@ -140,6 +141,7 @@ class Downloader(
                 Log.d(TAG, "Download progress for task ${downloadTask.id}: $progress%")
 
                 downloadTask = downloadTask.copy(progress = progress)
+
                 delay(DOWNLOAD_DELAY)
             }
         }
@@ -161,10 +163,6 @@ class Downloader(
                     val status =  cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))
                     if(status == DownloadManager.STATUS_FAILED
                         || status == DownloadManager.STATUS_SUCCESSFUL) {
-
-                        downloadTask = downloadTask.copy(
-                            downloadStatus = status.fromStatusCode()
-                        )
 
                         cursor.close()
                         return 100

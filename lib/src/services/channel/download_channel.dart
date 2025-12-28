@@ -52,8 +52,8 @@ class DownloadChannel {
         ChannelTag.download,
         info.toJson(),
       );
-      if (result is Map<String, dynamic>) {
-        return DownloadResult.fromJson(result);
+      if (result is Map) {
+        return DownloadResult.fromJson(Map<String, dynamic>.from(result));
       }
 
       return null;

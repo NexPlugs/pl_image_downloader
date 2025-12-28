@@ -20,6 +20,8 @@ class _MyAppState extends State<MyApp> {
   int _downloadProgress = 0;
   String _statusMessage = 'Ready to download';
   DownloadResult? _lastDownloadResult;
+  final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+      GlobalKey<ScaffoldMessengerState>();
 
   @override
   void initState() {
@@ -87,7 +89,7 @@ class _MyAppState extends State<MyApp> {
 
       // Show success message
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        _scaffoldMessengerKey.currentState?.showSnackBar(
           SnackBar(
             content: Text('Downloaded to: ${result?.path ?? 'Unknown path'}'),
             backgroundColor: Colors.green,
@@ -102,7 +104,7 @@ class _MyAppState extends State<MyApp> {
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        _scaffoldMessengerKey.currentState?.showSnackBar(
           SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
       }
@@ -112,6 +114,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: _scaffoldMessengerKey,
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Image Downloader Example'),
