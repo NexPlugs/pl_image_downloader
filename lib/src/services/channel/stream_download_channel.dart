@@ -40,21 +40,28 @@ class StreamDownloadChannel {
     try {
       _serviceChannel.setMethodCallHandler((MethodCall methodCall) async {
         if (methodCall.method != ChannelTag.eventBridge) return;
-        Logger.i(
-          _tag,
-          "[ListenEventBridge] Method call: ${methodCall.method} Arguments: ${methodCall.arguments} type: ${methodCall.arguments.runtimeType}",
-        );
+
         if (methodCall.arguments is! Map) return;
         final json = Map<String, dynamic>.from(methodCall.arguments);
-        Logger.i(_tag, "[ListenEventBridge] Json: $json");
 
         final eventBridge = DownloadEventBridge.fromValue(json);
 
-        Logger.i(_tag, "[ListenEventBridge] Event bridge: $eventBridge");
         _callBack?.call(eventBridge);
       });
     } catch (e) {
       Logger.e(_tag, e.toString());
+    }
+  }
+
+  /// Dispose
+  /// This method is used to dispose the stream download channel.
+  /// @throws Exception if the stream download channel fails to dispose.
+  void dispose() {
+    try {
+      _serviceChannel.setMethodCallHandler(null);
+      _callBack = null;
+    } catch (e) {
+      Logger.e(_tag, "[Dispose StreamDownloadChannel] Error: $e");
     }
   }
 }

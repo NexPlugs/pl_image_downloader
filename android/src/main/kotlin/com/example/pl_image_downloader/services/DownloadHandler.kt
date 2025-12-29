@@ -6,6 +6,7 @@ import android.content.Context
 import android.util.Log
 import com.example.pl_image_downloader.models.DownloadInfo
 import com.example.pl_image_downloader.models.DownloadStatus
+import com.example.pl_image_downloader.models.DownloadTask
 import com.example.pl_image_downloader.models.enum.DownloadException
 import com.example.pl_image_downloader.models.fromDownloadConfiguration
 import com.example.pl_image_downloader.utils.ChannelTag
@@ -31,6 +32,7 @@ class DownloadHandler(val activity: Activity) {
         }
     }
 
+    /** * Flag to indicate if the download service has been set up.*/
     private var serviceSetUp = false
 
     init { INSTANCE = this }

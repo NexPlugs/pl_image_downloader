@@ -1,6 +1,7 @@
 //
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:pl_image_downloader/src/models/download_configuration.dart';
 import 'package:pl_image_downloader/src/models/download_info.dart';
 import 'package:pl_image_downloader/src/models/download_result.dart';
@@ -195,4 +196,24 @@ class DownloadService {
   }
 
   /// End Region === Event Bridge handler ===
+
+  void cleanUp() {
+    for (final id in _downloadTasks.keys) {
+      _clearTask(id);
+    }
+    _downloadTasks.clear();
+    _downloadTaskCompleters.clear();
+
+    _downloadConfiguration = null;
+    _isSetUp = false;
+  }
+
+  /// Dispose
+  /// This method is used to dispose the download service. Need to call this method when the download service is no longer needed.
+  /// @throws Exception if the download service fails to dispose.
+  @mustCallSuper
+  void dispose() {
+    cleanUp();
+    StreamDownloadChannel.instance.dispose();
+  }
 }
