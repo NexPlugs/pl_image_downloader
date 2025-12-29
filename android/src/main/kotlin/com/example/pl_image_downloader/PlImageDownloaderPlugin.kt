@@ -2,7 +2,6 @@ package com.example.pl_image_downloader
 
 import android.util.Log
 import com.example.pl_image_downloader.services.DownloadHandler
-import com.example.pl_image_downloader.utils.BASE_ERROR_TAG
 import com.example.pl_image_downloader.utils.ChannelTag
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -49,7 +48,7 @@ class PlImageDownloaderPlugin :
         activityBinding = binding
         val activity = binding.activity
 
-        service = DownloadHandler.getInstance() ?: DownloadHandler(activity)
+        service = DownloadHandler.getInstance() ?: DownloadHandler()
 
         val context = activity.applicationContext
 

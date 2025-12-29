@@ -14,15 +14,12 @@ import 'channel/stream_download_channel.dart';
 
 /// Download Service
 /// This class is used to handle the download service.
+/// This is specially Service for download image, many concurrent download task will be handled by this service.
 class DownloadService {
   static const String tag = "download_service";
 
-  DownloadConfiguration? _downloadConfiguration;
-
   ///Constructor
-  DownloadService({DownloadConfiguration? downloadConfiguration}) {
-    _downloadConfiguration = downloadConfiguration;
-  }
+  DownloadService();
 
   ///The map of the download task controllers.
   ///The key is the id of the download task.
@@ -90,20 +87,20 @@ class DownloadService {
   }
 
   ///Init the download service
-  ///This method is used to initialize the download service.
-  ///@return A future that completes when the download service is initialized.
+  ///This method is used to initialize the download service. Need to call this method before any other method in the download service.
+  ///@param downloadConfiguration The download configuration If not provided, the download configuration will be used from default.
   ///@throws Exception if the download service fails to initialize.
-  Future<void> init() async {
+  Future<void> init(DownloadConfiguration? downloadConfiguration) async {
     if (_isSetUp) {
       Logger.i(tag, "[Init] Download service already initialized");
       return;
     }
 
+    Logger.i(tag, "[Init] Initializing download service");
     try {
-      Logger.i(tag, "[Init] Initializing download service");
-      await DownloadChannel.initDownloadConfig(_downloadConfiguration!);
-
-      Logger.i(tag, "[Init] Download service initialized");
+      if (downloadConfiguration != null) {
+        await DownloadChannel.downloadConfig(downloadConfiguration);
+      }
 
       StreamDownloadChannel.setCallBack((eventBridge) {
         Logger.i(tag, "[Init] Event bridge: $eventBridge");
@@ -123,6 +120,21 @@ class DownloadService {
     } catch (e) {
       Logger.e(tag, "[Init] Error: $e");
       throw Exception(e);
+    }
+  }
+
+  ///Download Config
+  ///This method is used to download the configuration.
+  ///@return A future that completes when the configuration is downloaded.
+  ///@throws Exception if the configuration fails to download.
+  Future<bool> downloadConfig(
+    DownloadConfiguration downloadConfiguration,
+  ) async {
+    try {
+      return await DownloadChannel.downloadConfig(downloadConfiguration);
+    } catch (e) {
+      Logger.e(tag, "[DownloadConfig] Error: $e");
+      return false;
     }
   }
 
@@ -204,7 +216,6 @@ class DownloadService {
     _downloadTasks.clear();
     _downloadTaskCompleters.clear();
 
-    _downloadConfiguration = null;
     _isSetUp = false;
   }
 

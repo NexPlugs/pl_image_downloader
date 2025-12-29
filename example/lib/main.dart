@@ -42,8 +42,8 @@ class _MyAppState extends State<MyApp> {
       );
 
       // Create and initialize download service
-      _downloadService = DownloadService(downloadConfiguration: config);
-      await _downloadService.init();
+      _downloadService = DownloadService();
+      await _downloadService.init(config);
 
       setState(() {
         _isInitialized = true;

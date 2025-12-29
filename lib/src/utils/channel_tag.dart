@@ -12,5 +12,7 @@ class ChannelTag {
 
   static const String downloadProgress = "download_progress";
 
+  static const String downloadConfig = "download_config";
+
   static const String eventBridge = "event_bridge";
 }

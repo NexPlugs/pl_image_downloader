@@ -43,6 +43,29 @@ class DownloadChannel {
     }
   }
 
+  ///Download Config
+  ///This method is used to download the configuration.
+  ///@param donwloadConfiguration The download configuration.
+  ///@return A future that completes when the configuration is downloaded.
+  ///@throws Exception if the configuration fails to download.
+  static Future<bool> downloadConfig(
+    DownloadConfiguration donwloadConfiguration,
+  ) async {
+    try {
+      final result = await _methodChannel.invokeMethod(
+        ChannelTag.downloadConfig,
+        donwloadConfiguration.toJson(),
+      );
+      if (result is bool) {
+        return result;
+      }
+      return false;
+    } catch (e) {
+      Logger.e(tag, e.toString());
+      throw Exception(e);
+    }
+  }
+
   ///Download
   ///This method is used to download a file.
   ///@param info The download info.

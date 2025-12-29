@@ -1,19 +1,17 @@
 package com.example.pl_image_downloader.services
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.util.Log
 import com.example.pl_image_downloader.models.DownloadInfo
 import com.example.pl_image_downloader.models.DownloadStatus
-import com.example.pl_image_downloader.models.DownloadTask
 import com.example.pl_image_downloader.models.enum.DownloadException
 import com.example.pl_image_downloader.models.fromDownloadConfiguration
 import com.example.pl_image_downloader.utils.ChannelTag
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
-class DownloadHandler(val activity: Activity) {
+class DownloadHandler(val flutterEngine: FlutterEngine) {
 
     var bridge: DownloadBridge? = null
 
@@ -32,10 +30,11 @@ class DownloadHandler(val activity: Activity) {
         }
     }
 
-    /** * Flag to indicate if the download service has been set up.*/
-    private var serviceSetUp = false
+    init {
+        INSTANCE = this
 
-    init { INSTANCE = this }
+        bridge = DownloadBridge(flutterEngine)
+    }
 
     /**
      * Initializes the download configuration based on the provided arguments from Flutter.
@@ -43,20 +42,22 @@ class DownloadHandler(val activity: Activity) {
      * @param result The MethodChannel.Result to send results back to Flutter.
      * @param flutterEngine The FlutterEngine instance for setting up the DownloadBridge.
      */
-    private fun initializeDownloadConfig(
+    private fun updateDownloadConfig(
         argument: Any,
         result: MethodChannel.Result,
-        flutterEngine: FlutterEngine
     ) {
-        if (argument !is Map<*, *>) return
+        if (argument !is Map<*, *>) {
+            val message = "Invalid argument for download configuration. Expected a Map."
+            Log.w(TAG, message)
+
+            result.success(false)
+            return
+        }
 
         val config = argument.fromDownloadConfiguration()
         Log.d(TAG, "Download configuration initialized: $config")
 
         DownloadGlobal.downloadConfig = config
-        serviceSetUp = true
-
-        bridge = DownloadBridge(flutterEngine)
 
         result.success(true)
     }
@@ -121,21 +122,13 @@ class DownloadHandler(val activity: Activity) {
         method: String,
         argument: Any,
         context: Context,
-        flutterEngine: FlutterEngine,
         result: MethodChannel.Result,
         errorLogBack: (String) -> Unit,
     ) {
-        if(!serviceSetUp && method != ChannelTag.INIT_DOWNLOAD_CONFIG) {
-            val message =  "Service not setup. Please initialize download configuration first."
-
-            Log.w(TAG, message)
-            errorLogBack.invoke(message)
-            return
-        }
 
         when(method) {
-            ChannelTag.INIT_DOWNLOAD_CONFIG -> {
-                initializeDownloadConfig(argument, result, flutterEngine)
+            ChannelTag.DOWNLOAD_CONFIG -> {
+                updateDownloadConfig(argument, result)
             }
             ChannelTag.DOWNLOAD -> {
                 if (argument !is Map<*, *>) {
@@ -163,7 +156,6 @@ class DownloadHandler(val activity: Activity) {
         bridge?.disposeScope()
         bridge = null
 
-        serviceSetUp = false
         INSTANCE = null
     }
 }

@@ -15,7 +15,7 @@ data class DownloadConfiguration(
     val downloadMode: DownloadMode = DownloadMode.NORMAL,
     val mimeType: MimeTypes = MimeTypes.IMAGE_JPEG,
     val retryCount: Int = 3,
-    val downloadDirectory: DownloadDirectory = DownloadDirectory.DOWNLOADS,
+    val downloadDirectory: DownloadDirectory = DownloadDirectory.PICTURES,
     val notificationConfig: NotificationConfig? = null,
 ) {
     companion object {
