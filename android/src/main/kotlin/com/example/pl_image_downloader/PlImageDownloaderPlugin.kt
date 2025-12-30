@@ -47,12 +47,12 @@ class PlImageDownloaderPlugin :
         Log.d(TAG, "Plugin attached to activity.")
         activityBinding = binding
         val activity = binding.activity
+        val engine = flutterEngine ?: return
 
-        service = DownloadHandler.getInstance() ?: DownloadHandler()
+
+        service = DownloadHandler.getInstance() ?: DownloadHandler(engine)
 
         val context = activity.applicationContext
-
-        val engine = flutterEngine ?: return
 
         MethodChannel(
             engine.dartExecutor.binaryMessenger,
@@ -66,7 +66,6 @@ class PlImageDownloaderPlugin :
                 errorLogBack = { errorMessage ->
                     //TODO: Improve error handling mechanism
                 },
-                flutterEngine = engine,
                 result = result
             )
         }

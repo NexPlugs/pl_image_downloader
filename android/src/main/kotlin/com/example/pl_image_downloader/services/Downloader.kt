@@ -147,11 +147,16 @@ class Downloader(
         }
     }
 
+    fun executePause() { }
+
+    fun executeResume() { }
+
     /** * Retrieves the current download progress for the given task ID. */
     @SuppressLint("Range")
     private fun getProcess(enqueueID: Long): Int {
         runCatching {
             val query = DownloadManager.Query().setFilterById(enqueueID)
+
             downloadManager.query(query)?.use { cursor ->
                 if(cursor.moveToFirst()) {
                     val downloadBytes =
