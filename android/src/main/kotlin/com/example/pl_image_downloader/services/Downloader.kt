@@ -3,8 +3,10 @@ package com.example.pl_image_downloader.services
 import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
+import android.content.ContentValues
 import android.content.Context
 import android.content.IntentFilter
+import android.provider.MediaStore.Downloads
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.example.pl_image_downloader.models.DownloadInfo
@@ -147,9 +149,13 @@ class Downloader(
         }
     }
 
-    fun executePause() { }
+    fun executePause(ids: List<Long>) {
+        //TODO: Not supported in DownloadManager
+    }
 
-    fun executeResume() { }
+    fun executeResume(ids: List<Long>) {
+        //TODO: Not supported in DownloadManager
+    }
 
     /** * Retrieves the current download progress for the given task ID. */
     @SuppressLint("Range")
@@ -226,6 +232,8 @@ class Downloader(
                     }
                     DownloadManager.STATUS_FAILED -> {
                         Log.e(TAG, "Download failed for task $enqueueID-$taskId. Reason code: $reason")
+
+                        DownloadGlobal.addRetryTask(taskId, downloadTask)
 
                         val exception = DownloadException.fromReasonDownload(reason)
                         downloadTask = downloadTask.copy(

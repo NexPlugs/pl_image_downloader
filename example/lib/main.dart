@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:pl_image_downloader/pl_image_downloader.dart';
+import 'package:pl_image_downloader/src/models/download_info.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +15,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  late DownloadService _downloadService;
+  late Downloader _downloader;
   bool _isInitialized = true;
   bool _isDownloading = false;
   int _downloadProgress = 0;
@@ -26,11 +27,17 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _initializeDownloadService();
+    _initializeDownloader();
   }
 
-  /// Initialize the download service
-  Future<void> _initializeDownloadService() async {
+  @override
+  void dispose() {
+    _downloader.dispose();
+    super.dispose();
+  }
+
+  /// Initialize the downloader
+  Future<void> _initializeDownloader() async {
     try {
       // Create download configuration
       final config = DownloadConfiguration(
@@ -41,14 +48,22 @@ class _MyAppState extends State<MyApp> {
         retryCount: 3,
       );
 
-      // Create and initialize download service
-      _downloadService = DownloadService();
-      await _downloadService.init(config);
+      // Create and configure downloader
+      _downloader = Downloader();
+      await _downloader.updateConfig(config);
+
+      // Set up progress watching
+      _downloader.watchProgress((progress) {
+        if (mounted) {
+          setState(() {
+            _downloadProgress = progress;
+          });
+        }
+      });
 
       setState(() {
         _isInitialized = true;
-
-        _statusMessage = 'Download service initialized';
+        _statusMessage = 'Downloader initialized';
       });
     } catch (e) {
       debugPrint("Error: $e");
@@ -74,11 +89,11 @@ class _MyAppState extends State<MyApp> {
     });
 
     try {
+      // Create download info
+      final downloadInfo = DownloadInfo.create(url: url, fileName: fileName);
+
       // Start download
-      final result = await _downloadService.download(
-        url: url,
-        fileName: fileName,
-      );
+      final result = await _downloader.download(downloadInfo);
 
       setState(() {
         _isDownloading = false;

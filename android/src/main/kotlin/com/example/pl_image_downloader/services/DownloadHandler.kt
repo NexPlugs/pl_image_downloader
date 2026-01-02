@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import com.example.pl_image_downloader.models.DownloadInfo
 import com.example.pl_image_downloader.models.DownloadStatus
+import com.example.pl_image_downloader.models.DownloadTask
 import com.example.pl_image_downloader.models.enum.DownloadException
 import com.example.pl_image_downloader.models.fromDownloadConfiguration
 import com.example.pl_image_downloader.utils.ChannelTag
@@ -63,6 +64,40 @@ class DownloadHandler(val flutterEngine: FlutterEngine) {
     }
 
     /**
+     * Handles the download callback based on the download task status.
+     * @param task The DownloadTask containing the current status and progress.
+     * @param errorLogBack A callback function to log errors back to Flutter.
+     * @param result The MethodChannel.Result to send results back to Flutter.
+     */
+    private fun handleDownloadCallBack(
+        task: DownloadTask,
+        errorLogBack: (String) -> Unit,
+        result: MethodChannel.Result? = null,
+    ) {
+        val id = task.id ?: return
+        when(task.downloadStatus) {
+            DownloadStatus.IN_PROGRESS -> {
+                val progress = task.progress
+                Log.d(TAG, "Download in progress for task ID: $id, progress: $progress%")
+                bridge?.invokeProgress(progress = progress, id = id)
+            }
+            DownloadStatus.COMPLETED -> {
+                task.result ?: return
+
+                Log.d(TAG, "Download completed for task ID: $id")
+                bridge?.invokeProgress(progress = 100, id = id)
+
+                result?.success(task.result.toMap())
+            }
+            DownloadStatus.FAILED -> {
+                Log.e(TAG, "Download failed for task ID: $id")
+                errorLogBack.invoke(task.exception?.code ?: DownloadException.UNKNOWN.code)
+            }
+            else -> { }
+        }
+    }
+
+    /**
      * Handles the download process based on the provided arguments from Flutter.
      * @param argument The arguments passed from Flutter, expected to be a Map.
      * @param context The Android context.
@@ -72,8 +107,8 @@ class DownloadHandler(val flutterEngine: FlutterEngine) {
     private fun handleDownload(
         argument: Map<*, *>,
         context: Context,
-        result: MethodChannel.Result,
-        errorLogBack: (String) -> Unit
+        errorLogBack: (String) -> Unit,
+        result: MethodChannel.Result? = null,
     ) {
         try {
             val downloadInfo = DownloadInfo.fromMap(argument)
@@ -81,27 +116,10 @@ class DownloadHandler(val flutterEngine: FlutterEngine) {
 
             val downloader = Downloader(context, downloadInfo)
                 .setDownloadCallBack { task ->
-                    val id = task.id ?: return@setDownloadCallBack
-                    when(task.downloadStatus) {
-                        DownloadStatus.IN_PROGRESS -> {
-                            val progress = task.progress
-                            Log.d(TAG, "Download in progress for task ID: $id, progress: $progress%")
-                            bridge?.invokeProgress(progress = progress, id = id)
-                        }
-                        DownloadStatus.COMPLETED -> {
-                            task.result ?: return@setDownloadCallBack
 
-                            Log.d(TAG, "Download completed for task ID: $id")
-                            bridge?.invokeProgress(progress = 100, id = id)
-
-                            result.success(task.result.toMap())
-                        }
-                        DownloadStatus.FAILED -> {
-                            Log.e(TAG, "Download failed for task ID: $id")
-                            errorLogBack.invoke(task.exception?.code ?: DownloadException.UNKNOWN.code)
-                        }
-                        else -> { }
-                    }
+                    handleDownloadCallBack(
+                        task = task,  errorLogBack = errorLogBack, result = result
+                    )
                 }
 
             downloader.executeDownload()
