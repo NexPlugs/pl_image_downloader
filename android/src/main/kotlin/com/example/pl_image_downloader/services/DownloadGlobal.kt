@@ -24,22 +24,5 @@ object DownloadGlobal {
         retryTask.remove(id)
     }
 
-    /** * A map to hold running download tasks with their IDs as keys. */
-    var runningTask: MutableMap<Long, DownloadTask> = mutableMapOf()
-    fun addRunningTask(id: Long, task: DownloadTask) {
-        if(runningTask.containsKey(id)) return
-        runningTask[id] = task
-    }
-
-    /** * Removes a running task by its ID. */
-    fun removeRunningTask(id: Long) {
-        runningTask.remove(id)
-    }
-
-    /** * Clears all tasks from both retry and running task maps. */
-    fun clearAll() {
-        retryTask.clear()
-        runningTask.clear()
-    }
 
 }

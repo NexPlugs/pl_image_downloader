@@ -48,7 +48,7 @@ class DownloadHandler(val flutterEngine: FlutterEngine) {
         result: MethodChannel.Result,
     ) {
         if (argument !is Map<*, *>) {
-            val message = "Invalid argument for download configuration. Expected a Map."
+            val message = "Invalid argument for download configuratio n. Expected a Map."
             Log.w(TAG, message)
 
             result.success(false)
@@ -75,6 +75,7 @@ class DownloadHandler(val flutterEngine: FlutterEngine) {
         result: MethodChannel.Result? = null,
     ) {
         val id = task.id ?: return
+
         when(task.downloadStatus) {
             DownloadStatus.IN_PROGRESS -> {
                 val progress = task.progress

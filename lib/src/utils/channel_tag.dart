@@ -15,4 +15,6 @@ class ChannelTag {
   static const String downloadConfig = "download_config";
 
   static const String eventBridge = "event_bridge";
+
+  static const String downloadServiceTag = "download_service_tag";
 }

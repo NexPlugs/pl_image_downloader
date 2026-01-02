@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:pl_image_downloader/src/enum/download_status.dart';
 import 'package:pl_image_downloader/src/models/download_configuration.dart';
 import 'package:pl_image_downloader/src/models/download_info.dart';
 import 'package:pl_image_downloader/src/models/download_result.dart';
@@ -165,13 +166,10 @@ class DownloadService {
     _downloadTaskCompleters[downloadTask.id] = completer;
     try {
       // Download the file
-      final downloadResult = await DownloadChannel.download(info);
-      completer.complete(downloadResult);
+      await DownloadChannel.downloadServiceTag(info);
     } catch (e) {
       Logger.e(tag, "[Download] Error: $e");
       throw Exception(e);
-    } finally {
-      _clearTask(downloadTask.id);
     }
 
     return await completer.future;
@@ -201,6 +199,19 @@ class DownloadService {
       "[HandleDownloadProgressEventBridge] Progress: ${eventBridge.progress}",
     );
     if (status.clearTaskAfterCompletion) {
+      if (status == DownloadStatus.completed) {
+        final taskCompleter = _downloadTaskCompleters[id];
+        if (taskCompleter != null && !taskCompleter.isCompleted) {
+          taskCompleter.complete(
+            DownloadResult(
+              fileName: task.fileName ?? '',
+              path: '', //TODO: Get the path from the event bridge
+              directoryResult:
+                  '', //TODO: Get the directory result from the event bridge
+            ),
+          );
+        }
+      }
       _clearTask(id);
     } else {
       _updateTask(id, task.copyWith(progress: eventBridge.progress));

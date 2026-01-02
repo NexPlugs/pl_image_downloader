@@ -85,4 +85,19 @@ class DownloadChannel {
       throw Exception(e);
     }
   }
+
+  ///Download Service Tag
+  ///This method is used to download the service tag.
+  ///@param info The download info.
+  static Future<void> downloadServiceTag(DownloadInfo info) async {
+    try {
+      await _methodChannel.invokeMethod(
+        ChannelTag.downloadServiceTag,
+        info.toJson(),
+      );
+    } catch (e) {
+      Logger.e(tag, e.toString());
+      throw Exception(e);
+    }
+  }
 }
