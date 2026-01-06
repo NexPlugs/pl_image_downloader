@@ -28,4 +28,33 @@ data class DownloadTask(
             return DownloadTask(id = info.id, url = info.url, fileName = info.fileName)
         }
     }
+
+    /** * Marks the download task as successful and updates its properties accordingly. */
+    fun success(): DownloadTask {
+        return this.copy(
+            downloadStatus = DownloadStatus.COMPLETED,
+            progress = 100,
+            result = DownloadResult(
+                path = destinationPath,
+                dictionary = destinationPath.substringBeforeLast("/"),
+                fileName = fileName,
+                isSuccess = true
+            )
+        )
+    }
+
+    /** * Marks the download task as failed and updates its properties accordingly. */
+    fun failed(errorMessage: String? = null, exception: DownloadException): DownloadTask {
+        return this.copy(
+            downloadStatus = DownloadStatus.FAILED,
+            exception = exception,
+            result = DownloadResult(
+                path = destinationPath,
+                dictionary = destinationPath.substringBeforeLast("/"),
+                fileName = fileName,
+                isSuccess = false,
+                errorMessage = errorMessage ?: exception.name
+            )
+        )
+    }
 }

@@ -2,6 +2,7 @@ package com.example.pl_image_downloader.services
 
 import android.util.Log
 import com.example.pl_image_downloader.models.DownloadCallBack
+import com.example.pl_image_downloader.models.DownloadResult
 import com.example.pl_image_downloader.utils.ChannelTag
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -45,11 +46,22 @@ class DownloadBridge(
         }
     }
 
+    /** Invokes a result update on the Flutter side. */
+    fun invokeResult(id: Long, result: DownloadResult) {
+        Log.i(TAG, "Invoking result for download ID: $id with result: $result")
+        val callBack = DownloadCallBack.Result(
+            value = result,
+            id = id
+        )
+        scope.launch {
+            channel.invokeMethod(ChannelTag.EVENT_BRIDGE, callBack.toMap())
+        }
+    }
+
 
     /** Disposes the coroutine scope to clean up resources. */
     fun disposeScope() {
         Log.i(TAG, "Disposing DownloadBridge scope.")
         scope.cancel()
     }
-
 }

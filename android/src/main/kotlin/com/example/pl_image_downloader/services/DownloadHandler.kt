@@ -16,6 +16,8 @@ class DownloadHandler(val flutterEngine: FlutterEngine) {
 
     var bridge: DownloadBridge? = null
 
+    var downloadService: DownloadService? = null;
+
     companion object {
         const val TAG = "DownloadHandler"
 
@@ -48,7 +50,7 @@ class DownloadHandler(val flutterEngine: FlutterEngine) {
         result: MethodChannel.Result,
     ) {
         if (argument !is Map<*, *>) {
-            val message = "Invalid argument for download configuratio n. Expected a Map."
+            val message = "Invalid argument for download configuration. Expected a Map."
             Log.w(TAG, message)
 
             result.success(false)
@@ -131,6 +133,51 @@ class DownloadHandler(val flutterEngine: FlutterEngine) {
         }
     }
 
+
+
+    /**
+     * Handles the download service tag method call from Flutter.
+     * @param argument The arguments passed from Flutter, expected to be a Map.
+     * @param context The Android context.
+     * @param result The MethodChannel.Result to send results back to Flutter.
+     */
+    private fun handleDownloadServiceTag(
+        argument: Map<*, *>,
+        context: Context,
+        result: MethodChannel.Result? = null
+    ) {
+        result ?: return
+        if(bridge == null) {
+            val message = "DownloadBridge is not initialized."
+            Log.w(TAG, message)
+            result.error("DOWNLOAD_BRIDGE_UNINITIALIZED", message, null)
+            return
+        }
+        if(downloadService == null) {
+            downloadService = DownloadService(context, bridge!!)
+        }
+        downloadService?.startDownload(
+            downloadInfo = DownloadInfo.fromMap(argument),
+            result = result
+        )
+
+    }
+
+    /**
+     * Validates the type of the provided value against the expected type T.
+     * Logs a warning if the type does not match.
+     * @param value The value to be checked.
+     * @return An empty string if the type matches, otherwise a warning message.
+     */
+    private inline fun<reified T> formatValidType(value: Any): String {
+        val check = value is T
+        if(!check) {
+            val message = "Invalid argument type. Expected ${T::class.java.simpleName}, but got ${value::class.java.simpleName}."
+            Log.w(TAG, message)
+        }
+        return ""
+    }
+
     /**
      * Handles method calls from Flutter and routes them to the appropriate native functions.
      * @param method The method name received from Flutter.
@@ -150,18 +197,30 @@ class DownloadHandler(val flutterEngine: FlutterEngine) {
                 updateDownloadConfig(argument, result)
             }
             ChannelTag.DOWNLOAD -> {
-                if (argument !is Map<*, *>) {
-                    val message = "Invalid argument for download method. Expected a Map."
-                    Log.w(TAG, message)
-                    errorLogBack.invoke(message)
+                val isValid = formatValidType<Map<*, *>>(argument)
+                if(isValid.isNotEmpty()) {
+                    errorLogBack.invoke(isValid)
                     return
                 }
 
                 handleDownload(
-                    argument = argument,
+                    argument = argument as Map<*, *>,
                     context = context,
                     result = result,
                     errorLogBack = errorLogBack
+                )
+            }
+            ChannelTag.DOWNLOAD_SERVICE_TAG -> {
+
+                val isValid = formatValidType<Map<*, *>>(argument)
+                if(isValid.isNotEmpty()) {
+                    errorLogBack.invoke(isValid)
+                    return
+                }
+                handleDownloadServiceTag(
+                    result = result,
+                    context = context,
+                    argument = argument as Map<*, *>,
                 )
             }
             else -> { Log.w(TAG, "Unknown method call: $method") }

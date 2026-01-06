@@ -3,10 +3,8 @@ package com.example.pl_image_downloader.services
 import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
-import android.content.ContentValues
 import android.content.Context
 import android.content.IntentFilter
-import android.provider.MediaStore.Downloads
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.example.pl_image_downloader.models.DownloadInfo
@@ -19,7 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import androidx.core.net.toUri
 import com.example.pl_image_downloader.models.DownloadConfiguration
-import com.example.pl_image_downloader.models.DownloadResult
 import com.example.pl_image_downloader.models.enum.DownloadDirectory
 import com.example.pl_image_downloader.models.enum.DownloadException
 import kotlinx.coroutines.delay
@@ -121,8 +118,11 @@ class Downloader(
         if(status.isInProgress()) return
 
         if(downloadTask.url.isEmpty()) {
-            Log.e(TAG, "Download URL is empty.")
-            downloadTask = downloadTask.copy(downloadStatus = DownloadStatus.FAILED)
+            val message = "Download URL is empty."
+            Log.e(TAG, message)
+            downloadTask = downloadTask.failed(
+                errorMessage = message, exception = DownloadException.INVALID_URL
+            )
             return
         }
         registerReceiver()
@@ -217,16 +217,7 @@ class Downloader(
                     DownloadManager.STATUS_SUCCESSFUL -> {
                         Log.d(TAG, "Download completed successfully for task $enqueueID-$taskId")
 
-                        downloadTask = downloadTask.copy(
-                            progress = 100,
-                            downloadStatus = DownloadStatus.COMPLETED,
-
-                            result = DownloadResult(
-                                fileName = downloadTask.fileName,
-                                dictionary = "", //TODO: get the actual directory
-                                path =  "" //TODO: get the actual path
-                            )
-                        )
+                        downloadTask = downloadTask.success()
 
                         unregisterReceiver()
                     }
@@ -236,10 +227,7 @@ class Downloader(
                         DownloadGlobal.addRetryTask(taskId, downloadTask)
 
                         val exception = DownloadException.fromReasonDownload(reason)
-                        downloadTask = downloadTask.copy(
-                            exception = exception,
-                            downloadStatus = DownloadStatus.FAILED,
-                        )
+                        downloadTask = downloadTask.failed(exception = exception)
 
                         unregisterReceiver()
                     }

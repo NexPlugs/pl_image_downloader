@@ -2,12 +2,13 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:pl_image_downloader/src/enum/download_status.dart';
 import 'package:pl_image_downloader/src/models/download_configuration.dart';
 import 'package:pl_image_downloader/src/models/download_info.dart';
 import 'package:pl_image_downloader/src/models/download_result.dart';
 import 'package:pl_image_downloader/src/models/download_task.dart';
+import 'package:pl_image_downloader/src/utils/func_extension.dart';
 
+import '../enum/download_status.dart';
 import '../models/download_event_bridge.dart';
 import '../utils/logger.dart';
 import 'channel/download_channel.dart';
@@ -110,6 +111,9 @@ class DownloadService {
           case DownloadProgressEventBridge():
             _handleDownloadProgressEventBridge(eventBridge);
             break;
+          case DownloadResultEventBridge():
+            _handleDownloadResultEventBridge(eventBridge);
+            break;
           default:
             break;
         }
@@ -158,7 +162,9 @@ class DownloadService {
 
     // Create a download task
     final downloadTask = DownloadTask.fromInfo(info: info);
-    _downloadTasks[downloadTask.id] = downloadTask;
+    _downloadTasks[downloadTask.id] = downloadTask.copyWith(
+      status: DownloadStatus.downloading,
+    );
     _downloadTaskControllers[downloadTask.id]?.add(downloadTask);
 
     // Create a completer for the download task
@@ -172,11 +178,15 @@ class DownloadService {
       throw Exception(e);
     }
 
+    // Wait for the download result
     return await completer.future;
   }
 
   /// Region === Event Bridge handler ===
 
+  /// Handle the download progress event bridge.
+  /// @param eventBridge The download progress event bridge.
+  /// @throws Exception if the download progress event bridge fails to handle.
   void _handleDownloadProgressEventBridge(
     DownloadProgressEventBridge eventBridge,
   ) {
@@ -199,23 +209,39 @@ class DownloadService {
       "[HandleDownloadProgressEventBridge] Progress: ${eventBridge.progress}",
     );
     if (status.clearTaskAfterCompletion) {
-      if (status == DownloadStatus.completed) {
-        final taskCompleter = _downloadTaskCompleters[id];
-        if (taskCompleter != null && !taskCompleter.isCompleted) {
-          taskCompleter.complete(
-            DownloadResult(
-              fileName: task.fileName ?? '',
-              path: '', //TODO: Get the path from the event bridge
-              directoryResult:
-                  '', //TODO: Get the directory result from the event bridge
-            ),
-          );
-        }
-      }
-      _clearTask(id);
+      Logger.i(
+        tag,
+        "[HandleDownloadProgressEventBridge] Clearing task after completion",
+      );
     } else {
       _updateTask(id, task.copyWith(progress: eventBridge.progress));
     }
+  }
+
+  /// Handle the download result event bridge.
+  /// @param eventBridge The download result event bridge.
+  /// @throws Exception if the download result event bridge fails to handle.
+  void _handleDownloadResultEventBridge(DownloadResultEventBridge eventBridge) {
+    final id = eventBridge.id;
+    if (id == null) {
+      Logger.e(
+        tag,
+        "[HandleDownloadResultEventBridge] Download result event bridge id is null",
+      );
+      return;
+    }
+
+    getTask(id)?.let((task) {
+      _updateTask(id, task.copyWith(status: DownloadStatus.completed));
+    });
+
+    _downloadTaskCompleters[id]?.let((completer) {
+      if (!completer.isCompleted) {
+        completer.complete(eventBridge.result);
+      }
+    });
+
+    _clearTask(id);
   }
 
   /// End Region === Event Bridge handler ===

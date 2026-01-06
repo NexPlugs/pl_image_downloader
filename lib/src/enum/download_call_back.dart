@@ -4,7 +4,10 @@ enum CallBack {
   // Negative CallBack
   negative(method: "negative"),
   // Neutral CallBack
-  neutral(method: "neutral");
+  neutral(method: "neutral"),
+
+  // Result CallBack
+  result(method: "result");
 
   final String method;
   const CallBack({required this.method});

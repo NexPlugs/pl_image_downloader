@@ -11,6 +11,7 @@ enum class DownloadException(val code: String) {
     INSUFFICIENT_SPACE("insufficient_space"),
     TOO_MANY_REDIRECTS("too_many_redirects"),
     UNHANDLED_HTTP_CODE("unhandled_http_code"),
+    INVALID_URL("invalid_url"),
     UNKNOWN("unknown");
 
     companion object {
