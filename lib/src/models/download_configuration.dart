@@ -1,4 +1,4 @@
-import 'package:pl_image_downloader/src/models/download_dictionary.dart';
+import 'package:pl_image_downloader/src/enum/download_dictionary.dart';
 
 import '../enum/download_mode.dart';
 import '../enum/mime_type.dart';

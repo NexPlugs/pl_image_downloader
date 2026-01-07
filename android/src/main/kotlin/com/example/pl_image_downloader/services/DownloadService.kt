@@ -37,6 +37,10 @@ class DownloadService(
         runningTask.clear()
     }
 
+    /**
+     * Handles download callbacks and updates the Flutter side via DownloadBridge.
+     * @param task The DownloadTask containing the current download status and progress.
+     */
     private fun handleDownloadCallBack(task: DownloadTask) {
         val id = task.id?: return
         when(task.downloadStatus) {

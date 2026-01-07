@@ -1,5 +1,5 @@
 import '../../pl_image_downloader.dart';
-import 'download_call_back.dart';
+import '../enum/download_call_back.dart';
 
 import '../utils/dynamic_extensions.dart';
 
