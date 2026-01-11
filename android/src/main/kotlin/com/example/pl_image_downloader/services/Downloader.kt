@@ -35,17 +35,25 @@ const val DOWNLOAD_DELAY = 1000L
  */
 class Downloader(
     val context: Context,
-    downloadInfo: DownloadInfo
+    downloadInfo: DownloadInfo? = null,
+    initTask: DownloadTask? = null,
 ) {
 
     companion object {
         const val TAG = "Downloader"
     }
 
+    init {
+        assert(downloadInfo != null || initTask != null) {
+            "Either downloadInfo or initTask must be provided."
+        }
+    }
+
+
     private val downloadManager: DownloadManager =  context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
     /** * The download task associated with this downloader. */
-    var downloadTask: DownloadTask = DownloadTask.fromDownloadInfo(downloadInfo)
+    var downloadTask: DownloadTask = initTask ?: DownloadTask.fromDownloadInfo(downloadInfo!!)
         set(value) {
             Log.d(TAG, "Download task updated: $value")
             field = value
@@ -61,6 +69,7 @@ class Downloader(
         this.downloadCallBack = callBack
         return this
     }
+
 
     /** * The global download configuration. */
     val downloadConfig: DownloadConfiguration get() { return DownloadGlobal.downloadConfig }

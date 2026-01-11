@@ -28,3 +28,7 @@ fun Int.fromStatusCode(): DownloadStatus {
 fun DownloadStatus.isInProgress(): Boolean {
     return this == DownloadStatus.PENDING || this == DownloadStatus.IN_PROGRESS
 }
+
+fun DownloadStatus.isFinished(): Boolean {
+    return this == DownloadStatus.COMPLETED || this == DownloadStatus.FAILED || this == DownloadStatus.CANCELED
+}
