@@ -27,6 +27,9 @@ class DownloadConfiguration {
 
   /// The download directory.
   final DownloadDirectory downloadDirectory;
+  
+  /// This option only work with iphone device  
+  final bool processOnDynamicIland;  
 
   DownloadConfiguration({
     this.saveName,
@@ -36,6 +39,7 @@ class DownloadConfiguration {
     this.mimeType = MimeType.imageJpeg,
     this.retryCount = 3,
     this.downloadDirectory = DownloadDirectory.downloads,
+    this.processOnDynamicIland = false,
   });
 
   /// Convert the download configuration to a JSON object.
@@ -48,6 +52,7 @@ class DownloadConfiguration {
       'retryCount': retryCount,
       'notificationConfig': notificationConfig?.toJson(),
       'downloadDirectory': downloadDirectory.directoryName,
+      'processOnDynamicIland': processOnDynamicIland,
     };
   }
 }

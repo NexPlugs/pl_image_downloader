@@ -167,13 +167,9 @@ class DownloadHandler(val flutterEngine: FlutterEngine) {
         result: MethodChannel.Result? = null
     ) {
         result ?: return
-        if(downloadService == null) {
-            
-        }
-
+        downloadService ?: return
+        downloadService?.clearAll()
     }
-
-
 
 
     /**
