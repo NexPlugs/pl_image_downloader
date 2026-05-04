@@ -1,7 +1,6 @@
 //
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:pl_image_downloader/src/models/download_configuration.dart';
 import 'package:pl_image_downloader/src/models/download_info.dart';
 import 'package:pl_image_downloader/src/models/download_result.dart';
@@ -259,9 +258,14 @@ class DownloadService {
   /// Dispose
   /// This method is used to dispose the download service. Need to call this method when the download service is no longer needed.
   /// @throws Exception if the download service fails to dispose.
-  @mustCallSuper
-  void dispose() {
+  Future<void> dispose() async {
     cleanUp();
     StreamDownloadChannel.instance.dispose();
+
+    try {
+      await DownloadChannel.serviceDispose();
+    } catch (e) {
+      Logger.e(tag, "[Dispose] Error: $e");
+    }
   }
 }

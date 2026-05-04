@@ -66,6 +66,18 @@ class DownloadChannel {
     }
   }
 
+  ///Service Dispose
+  ///This method is used to dispose the service.
+  ///@throws Exception if the service fails to dispose.
+  static Future<void> serviceDispose() async {
+    try {
+      await _methodChannel.invokeMethod(ChannelTag.serviceDisposeTag);
+    } catch (e) {
+      Logger.e(tag, e.toString());
+      throw Exception(e);
+    }
+  }
+
   ///Download
   ///This method is used to download a file.
   ///@param info The download info.

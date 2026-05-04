@@ -7,7 +7,7 @@ class ChannelTag {
 
   /// Download Tag
   static const String initDownloadConfig = "init_download_config";
-  
+
   static const String download = "download";
 
   static const String downloadProgress = "download_progress";
@@ -17,4 +17,6 @@ class ChannelTag {
   static const String eventBridge = "event_bridge";
 
   static const String downloadServiceTag = "download_service_tag";
+
+  static const String serviceDisposeTag = "service_dispose_tag";
 }

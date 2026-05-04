@@ -160,8 +160,21 @@ class DownloadHandler(val flutterEngine: FlutterEngine) {
             downloadInfo = DownloadInfo.fromMap(argument),
             result = result
         )
+    }
+
+
+    private fun handleServiceDispose(
+        result: MethodChannel.Result? = null
+    ) {
+        result ?: return
+        if(downloadService == null) {
+            
+        }
 
     }
+
+
+
 
     /**
      * Validates the type of the provided value against the expected type T.
@@ -223,6 +236,7 @@ class DownloadHandler(val flutterEngine: FlutterEngine) {
                     argument = argument as Map<*, *>,
                 )
             }
+            ChannelTag.SERVICE_DISPOSE_TAG -> handleServiceDispose(result)                 
             else -> { Log.w(TAG, "Unknown method call: $method") }
         }
     }
