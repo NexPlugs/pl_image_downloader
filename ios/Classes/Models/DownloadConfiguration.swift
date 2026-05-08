@@ -15,13 +15,15 @@ public struct DownloadConfiguration {
 
 
 public extension DownloadConfiguration {
-    let default: DownloadConfiguration = DownloadConfiguration()
+    static func `default`() -> DownloadConfiguration {
+        DownloadConfiguration()
+    }
     
     let isNormalMode: Bool = downloadMode == .normal
     
     let isBackgroundMode: Bool = downloadMode == .background
     
-    let
+    
 }
 
 public extension Dictionary where Key == String, Value == Any {

@@ -15,12 +15,12 @@ public struct DownloadResult {
 
 
 public extension DownloadResult {
-    let toMap: [String: Any] {
+    func toMap() -> [String: Any] {
         var map = [String: Any](
-            "path": path,
-            "directoryResult": dictionary,
-            "fileName": fileName,
-            "isSuccess": isSuccess,
+            "path", path,
+            "directoryResult", dictionary,
+            "fileName", fileName,
+            "isSuccess", isSuccess,
         )
         if let error = error {
             map["errorMessage"] = error
