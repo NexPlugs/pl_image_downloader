@@ -18,7 +18,11 @@ enum DownloadStatus {
 
 
 extension DownloadStatus {
-    let isInProgress: Bool = self == .inProgress
+    var isInProgress: Bool {
+        return self == .inProgress
+    }
     
-    let isCompleted: Bool = self == .completed
+    var isCompleted: Bool {
+        return self == .completed
+    }
 }

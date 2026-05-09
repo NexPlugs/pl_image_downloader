@@ -5,7 +5,7 @@
 //  Created by Nguyễn Minh Hưng on 5/5/26.
 //
 
-public enum DownloadMode: String {
+public enum DownloadMode: String, CaseIterable {
     case normal = "normal"
     case runningBackgroundService = "runningBackgroundService"
 }

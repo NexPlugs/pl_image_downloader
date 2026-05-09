@@ -1,11 +1,11 @@
 //
 //  DownloadTask.swift
 //
-//  Created by Nguyễn Minh Hưng on 5/5/26.
-//
+
+import Foundation
 
 struct DownloadTask {
-    
+
     let id: Int64?
     let enqueueId: Int64?
     let url: String
@@ -14,11 +14,10 @@ struct DownloadTask {
     let overwrite: Bool
     let downloadStatus: DownloadStatus
     let progress: Int
-    
-    
+
     /// Result of the download operation.
     let result: DownloadResult?
-    
+
     init(
         id: Int64? = nil,
         enqueueId: Int64? = nil,
@@ -43,16 +42,22 @@ struct DownloadTask {
 }
 
 extension DownloadTask {
-    
+
     static func fromDownloadInfo(_ info: DownloadInfo) -> DownloadTask {
+
         return DownloadTask(
             id: info.id,
             url: info.url,
             fileName: info.fileName
         )
     }
-    
+
     func success() -> DownloadTask {
+
+        let directory = URL(fileURLWithPath: destinationPath)
+            .deletingLastPathComponent()
+            .path
+
         return DownloadTask(
             id: id,
             enqueueId: enqueueId,
@@ -64,16 +69,20 @@ extension DownloadTask {
             progress: 100,
             result: DownloadResult(
                 path: destinationPath,
-                dictionary: destinationPath.deletingLastPathComponent,
+                dictionary: directory,
                 fileName: fileName,
                 isSuccess: true,
-                errorMessage: nil
+                error: nil
             )
         )
     }
-    
+
     func failed(errorMessage: String? = nil) -> DownloadTask {
-        
+
+        let directory = URL(fileURLWithPath: destinationPath)
+            .deletingLastPathComponent()
+            .path
+
         return DownloadTask(
             id: id,
             enqueueId: enqueueId,
@@ -85,12 +94,11 @@ extension DownloadTask {
             progress: progress,
             result: DownloadResult(
                 path: destinationPath,
-                dictionary: destinationPath.deletingLastPathComponent,
+                dictionary: directory,
                 fileName: fileName,
                 isSuccess: false,
-                errorMessage: errorMessage ?? "Unknown error occurred during download."
+                error: errorMessage ?? "Unknown error occurred during download."
             )
         )
     }
 }
-
