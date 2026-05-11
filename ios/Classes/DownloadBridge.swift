@@ -1,13 +1,12 @@
 //
 //  DownloadBridge.swift
-//  Goz247
 //
 //  Created by Nguyễn Minh Hưng on 8/5/26.
 //
 
 
 
-class DownloadBridge {
+struct DownloadBridge {
     static private let TAG = "DownloadBridge"
 
     private  var batteryChannel: FlutterMethodChannel?
