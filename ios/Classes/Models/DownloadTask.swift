@@ -101,4 +101,28 @@ extension DownloadTask {
             )
         )
     }
+    
+    func copy(
+        id: Int64?? = nil,
+        enqueueId: Int64?? = nil,
+        url: String? = nil,
+        destinationPath: String? = nil,
+        fileName: String? = nil,
+        overwrite: Bool? = nil,
+        downloadStatus: DownloadStatus? = nil,
+        progress: Int? = nil,
+        result: DownloadResult?? = nil
+    ) -> DownloadTask {
+        return DownloadTask(
+            id: id ?? self.id,
+            enqueueId: enqueueId ?? self.enqueueId,
+            url: url ?? self.url,
+            destinationPath: destinationPath ?? self.destinationPath,
+            fileName: fileName ?? self.fileName,
+            overwrite: overwrite ?? self.overwrite,
+            downloadStatus: downloadStatus ?? self.downloadStatus,
+            progress: progress ?? self.progress,
+            result: result ?? self.result
+        )
+    }
 }

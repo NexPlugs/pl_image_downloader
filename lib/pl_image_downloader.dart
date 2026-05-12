@@ -7,6 +7,7 @@ export 'src/services/downloader.dart';
 /// Download models
 export 'src/models/download_configuration.dart';
 export 'src/models/download_result.dart';
+export 'src/models/download_info.dart';
 
 /// Download enum
 export 'src/enum/download_mode.dart';

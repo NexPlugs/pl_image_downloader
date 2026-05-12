@@ -10,6 +10,12 @@ class ChannelTag {
 
   static const String download = "download";
 
+  static const String downloadPause = "download_pause";
+
+  static const String downloadResume = "download_resume";
+
+  static const String downloadCancel = "download_cancel";
+
   static const String downloadProgress = "download_progress";
 
   static const String downloadConfig = "download_config";

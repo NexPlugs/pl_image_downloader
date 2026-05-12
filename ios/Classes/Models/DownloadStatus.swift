@@ -25,4 +25,8 @@ extension DownloadStatus {
     var isCompleted: Bool {
         return self == .completed
     }
+
+    var isPaused: Bool {
+        return self == .paused
+    }
 }

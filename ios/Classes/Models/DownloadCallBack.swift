@@ -13,5 +13,23 @@ public enum DownloadCallBack {
     case onComplete(value: DownloadResultProtocol, id: Int64)
 }
 
+extension DownloadCallBack {
+    func toMap() -> [String: Any] {
+        switch self {
+        case .onProgress(let value, let id):
+            return [
+                "method": "progress",
+                "value": value,
+                "id": id
+            ]
+        case .onComplete(let value, let id):
+            return [
+                "method": "result",
+                "value": value.toMap(),
+                "id": id
+            ]
+        }
+    }
+}
 
 
