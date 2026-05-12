@@ -63,17 +63,14 @@ class Downloader {
     private func factoryError(
         message: String
     ) {
-        print("\(Downloader.TAG) factoryError: \(message)")
+        NSLog("\(Downloader.TAG) factoryError: \(message)")
         downloadTask = downloadTask.failed(errorMessage: message)
     }
     
     func executeDownload() {
         if status.isInProgress { return }
-        NSLog("\(Downloader.TAG) Starting download for task id: \(String(describing: downloadTask.id)) with URL: \(downloadTask.url)")
         
         guard let session = session else { return }
-
-        NSLog("\(Downloader.TAG) URLSession created for task id: \(String(describing: downloadTask.id))")
 
         downloadTask = downloadTask.copy(downloadStatus: .inProgress)
         
@@ -84,8 +81,6 @@ class Downloader {
             return
         }
 
-        NSLog("\(Downloader.TAG) Download task created for task id: \(String(describing: downloadTask.id))")
-
         guard let url = URL(string: downloadTask.url) else {
             factoryError(
                 message: "Invalid URL: \(downloadTask.url) for task id: \(String(describing: downloadTask.id))"
@@ -93,16 +88,12 @@ class Downloader {
             return
         }
         
-        NSLog("\(Downloader.TAG) Starting download task for task id: \(String(describing: downloadTask.id)) with URL: \(downloadTask.url)")
 
         let request = URLRequest(url: url)
         
         let task = session.downloadTask(with: request) {
             [weak self] tempUrl, response, error in
-            guard let self = self else {
-                NSLog("\(Downloader.TAG) Download completion handler called but self is nil for task id: \(String(describing: self?.downloadTask.id))")
-                return
-            }
+            guard let self = self else { return }
             
             NSLog("\(Downloader.TAG) Download complete but temporary file URL is nil for task id: \(String(describing: self.downloadTask.id))")
             
@@ -145,8 +136,6 @@ class Downloader {
         // Keep a reference if you intend to pause/resume/cancel later
         self.downloadTaskNative = task
         startTradeProgress()
-
-        NSLog("\(Downloader.TAG) Download task started for task id: \(String(describing: downloadTask.id))")
 
         self.downloadTaskNative?.resume()
     }
