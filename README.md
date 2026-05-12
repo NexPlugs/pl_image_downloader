@@ -18,17 +18,22 @@ A powerful Flutter plugin for downloading images with progress tracking, notific
 
 | Platform | Support | Notes |
 |----------|---------|-------|
-| **Android** | ✅ Full Support | All features including background service mode |
-| **iOS** | ❌ Not Implemented | iOS implementation is not yet available |
+| **Android** | ✅ | --- |
+| **iOS** | ✅ | --- |
 
 ### Android Requirements
 - Minimum SDK: Not specified (check `build.gradle` for details)
 - Permissions: Internet permission (automatically handled)
 - Storage permissions: Required for saving files (handled automatically)
 
-### iOS Status
-- ⚠️ **iOS is not yet implemented**. The plugin currently only works on Android.
-- iOS support is planned for future releases.
+### iOS Requirements
+- Add some permission for iOS device
+```
+<key>NSPhotoLibraryAddUsageDescription</key>
+<string>We need access to save images to your photo library.</string>
+<key>NSPhotoLibraryUsageDescription</key>
+<string>We need access to your photo library to select images for your posts.</string>
+```
 
 ## Installation
 
@@ -318,7 +323,7 @@ Result of a download operation.
 
 ## Notes
 
-- ⚠️ **iOS is not yet implemented** - This plugin currently only works on Android
+- This plugin currently work for both Android and iOS
 - Background service mode (`DownloadMode.runningBackgroundService`) is only available on Android
 - External storage option (`isExternalStorage`) is Android-specific
 - Make sure to dispose `Downloader` or `DownloadService` instances when done to free resources
