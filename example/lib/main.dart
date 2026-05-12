@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:pl_image_downloader/pl_image_downloader.dart';
-import 'package:pl_image_downloader/src/models/download_info.dart';
 
 void main() {
   runApp(const MyApp());

@@ -2,7 +2,6 @@ import 'package:pl_image_downloader/src/services/channel/stream_download_channel
 
 import '../../pl_image_downloader.dart';
 import '../models/download_event_bridge.dart';
-import '../models/download_info.dart';
 import '../utils/async_mutex.dart';
 import '../utils/logger.dart';
 import 'channel/download_channel.dart';

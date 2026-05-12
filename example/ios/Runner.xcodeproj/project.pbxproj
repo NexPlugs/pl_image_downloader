@@ -16,6 +16,19 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		AF24D8B42FB185CA00F47105 /* DownloadInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D8AF2FB185CA00F47105 /* DownloadInfo.swift */; };
+		AF24D8B52FB185CA00F47105 /* DownloadResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D8B02FB185CA00F47105 /* DownloadResult.swift */; };
+		AF24D8B62FB185CA00F47105 /* DownloadConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D8AE2FB185CA00F47105 /* DownloadConfiguration.swift */; };
+		AF24D8B72FB185CA00F47105 /* DownloadTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D8B22FB185CA00F47105 /* DownloadTask.swift */; };
+		AF24D8B82FB185CA00F47105 /* DownloadMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D8AA2FB185CA00F47105 /* DownloadMode.swift */; };
+		AF24D8B92FB185CA00F47105 /* MimTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D8AB2FB185CA00F47105 /* MimTypes.swift */; };
+		AF24D8BA2FB185CA00F47105 /* DownloadStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D8B12FB185CA00F47105 /* DownloadStatus.swift */; };
+		AF24D8BB2FB185CA00F47105 /* DownloadCallBack.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D8AD2FB185CA00F47105 /* DownloadCallBack.swift */; };
+		AF24D8BE2FB185E600F47105 /* ChannelTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D8BC2FB185E600F47105 /* ChannelTag.swift */; };
+		AF24D9AE2FB186AA00F47105 /* PlImageDownloaderPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D9AD2FB186AA00F47105 /* PlImageDownloaderPlugin.swift */; };
+		AF24D9B22FB186BE00F47105 /* Downloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D9B02FB186BE00F47105 /* Downloader.swift */; };
+		AF24D9B32FB186BE00F47105 /* DownloadBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D9AF2FB186BE00F47105 /* DownloadBridge.swift */; };
+		AF24D9B42FB186BE00F47105 /* DownloadHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D9B12FB186BE00F47105 /* DownloadHandler.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +72,19 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9A12787966CE1017AB71A2A2 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF24D8AA2FB185CA00F47105 /* DownloadMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadMode.swift; sourceTree = "<group>"; };
+		AF24D8AB2FB185CA00F47105 /* MimTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MimTypes.swift; sourceTree = "<group>"; };
+		AF24D8AD2FB185CA00F47105 /* DownloadCallBack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadCallBack.swift; sourceTree = "<group>"; };
+		AF24D8AE2FB185CA00F47105 /* DownloadConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadConfiguration.swift; sourceTree = "<group>"; };
+		AF24D8AF2FB185CA00F47105 /* DownloadInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadInfo.swift; sourceTree = "<group>"; };
+		AF24D8B02FB185CA00F47105 /* DownloadResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadResult.swift; sourceTree = "<group>"; };
+		AF24D8B12FB185CA00F47105 /* DownloadStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadStatus.swift; sourceTree = "<group>"; };
+		AF24D8B22FB185CA00F47105 /* DownloadTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadTask.swift; sourceTree = "<group>"; };
+		AF24D8BC2FB185E600F47105 /* ChannelTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelTag.swift; sourceTree = "<group>"; };
+		AF24D9AD2FB186AA00F47105 /* PlImageDownloaderPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlImageDownloaderPlugin.swift; sourceTree = "<group>"; };
+		AF24D9AF2FB186BE00F47105 /* DownloadBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadBridge.swift; sourceTree = "<group>"; };
+		AF24D9B02FB186BE00F47105 /* Downloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Downloader.swift; sourceTree = "<group>"; };
+		AF24D9B12FB186BE00F47105 /* DownloadHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadHandler.swift; sourceTree = "<group>"; };
 		B10A475764891E4E90A173E4 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		C067A72B34630A929B36206D /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EDD2EC791120294F69B1C325 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
@@ -105,7 +131,6 @@
 				B10A475764891E4E90A173E4 /* Pods-RunnerTests.release.xcconfig */,
 				FC8FD2F72D498D076106C2B5 /* Pods-RunnerTests.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -144,6 +169,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				AF24D8BF2FB1860C00F47105 /* Service */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
@@ -154,6 +180,50 @@
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 			);
 			path = Runner;
+			sourceTree = "<group>";
+		};
+		AF24D8AC2FB185CA00F47105 /* Enum */ = {
+			isa = PBXGroup;
+			children = (
+				AF24D8AA2FB185CA00F47105 /* DownloadMode.swift */,
+				AF24D8AB2FB185CA00F47105 /* MimTypes.swift */,
+			);
+			path = Enum;
+			sourceTree = "<group>";
+		};
+		AF24D8B32FB185CA00F47105 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AF24D8AC2FB185CA00F47105 /* Enum */,
+				AF24D8AD2FB185CA00F47105 /* DownloadCallBack.swift */,
+				AF24D8AE2FB185CA00F47105 /* DownloadConfiguration.swift */,
+				AF24D8AF2FB185CA00F47105 /* DownloadInfo.swift */,
+				AF24D8B02FB185CA00F47105 /* DownloadResult.swift */,
+				AF24D8B12FB185CA00F47105 /* DownloadStatus.swift */,
+				AF24D8B22FB185CA00F47105 /* DownloadTask.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AF24D8BD2FB185E600F47105 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				AF24D8BC2FB185E600F47105 /* ChannelTag.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		AF24D8BF2FB1860C00F47105 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				AF24D9AF2FB186BE00F47105 /* DownloadBridge.swift */,
+				AF24D9B02FB186BE00F47105 /* Downloader.swift */,
+				AF24D9B12FB186BE00F47105 /* DownloadHandler.swift */,
+				AF24D9AD2FB186AA00F47105 /* PlImageDownloaderPlugin.swift */,
+				AF24D8BD2FB185E600F47105 /* Utils */,
+				AF24D8B32FB185CA00F47105 /* Models */,
+			);
+			path = Service;
 			sourceTree = "<group>";
 		};
 		EA9093FBD1A5DDFB5A107504 /* Frameworks */ = {
@@ -378,7 +448,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				AF24D9AE2FB186AA00F47105 /* PlImageDownloaderPlugin.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
+				AF24D8B42FB185CA00F47105 /* DownloadInfo.swift in Sources */,
+				AF24D8B52FB185CA00F47105 /* DownloadResult.swift in Sources */,
+				AF24D9B22FB186BE00F47105 /* Downloader.swift in Sources */,
+				AF24D9B32FB186BE00F47105 /* DownloadBridge.swift in Sources */,
+				AF24D9B42FB186BE00F47105 /* DownloadHandler.swift in Sources */,
+				AF24D8B62FB185CA00F47105 /* DownloadConfiguration.swift in Sources */,
+				AF24D8B72FB185CA00F47105 /* DownloadTask.swift in Sources */,
+				AF24D8BE2FB185E600F47105 /* ChannelTag.swift in Sources */,
+				AF24D8B82FB185CA00F47105 /* DownloadMode.swift in Sources */,
+				AF24D8B92FB185CA00F47105 /* MimTypes.swift in Sources */,
+				AF24D8BA2FB185CA00F47105 /* DownloadStatus.swift in Sources */,
+				AF24D8BB2FB185CA00F47105 /* DownloadCallBack.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -4,10 +4,14 @@
 //  Created by Nguyễn Minh Hưng on 8/5/26.
 //
 
-struct DownloadHandler {
+import Flutter
+
+class DownloadHandler {
     static private let TAG = "DownloadHandler"
     
     private var bridge: DownloadBridge? = nil
+    
+    private var activeDownloaders = [Int64: Downloader]()
     
     public init(
         messenger: FlutterBinaryMessenger
@@ -30,6 +34,10 @@ struct DownloadHandler {
         
         guard let id = task.id, let bridge = bridge else { return }
         
+        if task.downloadStatus == .failed || task.downloadStatus == .completed {
+            activeDownloaders.removeValue(forKey: id)
+        }
+                    
         switch task.downloadStatus {
         case .inProgress:
             let progress = task.progress
@@ -54,7 +62,24 @@ struct DownloadHandler {
         result: @escaping FlutterResult,
         errorLogBack: @escaping (String) -> Void
     ) {
+        let info = argument.toDownloadInfo()
         
+        guard let taskId = info.id else { return }
+        
+        
+        let downloader = Downloader(downloadInfo: info)
+            .setDownloadCallBack { [weak self] downloadTask in
+                guard let self = self else { return }
+                self.handleDownloadCallBack(
+                    task: downloadTask,
+                    errorLogBack: errorLogBack,
+                    result: result
+                )
+            }
+        
+        activeDownloaders[taskId] = downloader
+        
+        downloader.executeDownload()
     }
     
     
@@ -69,6 +94,10 @@ struct DownloadHandler {
         result: @escaping FlutterResult,
     ) {
         bridge?.dispose()
+        
+        // Remove all active downloaders and cancel their tasks
+        activeDownloaders.forEach { $0.value.cancel() }
+        activeDownloaders.removeAll()
     }
     
     
@@ -78,6 +107,7 @@ struct DownloadHandler {
         result: @escaping FlutterResult,
         errorLogBack: @escaping (String) -> Void
     ) {
+        print("\(DownloadHandler.TAG) doAction method: \(method) arguments: \(String(describing: arguments))")
         
         switch method {
         case ChannelTag.downloadConfig:

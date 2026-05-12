@@ -5,9 +5,11 @@
 //
 
 import Photos
+import Flutter
 
 let DOWNLOAD_DELAY: UInt64 = 1_000_000_000
 
+// Downloader is responsible for managing the download process of a single DownloadTask, including starting, pausing, resuming, and canceling the download. It also handles progress updates and saving the downloaded image to the photo library or documents directory based on permissions.
 class Downloader {
     static private let TAG = "Downloader"
     
@@ -39,6 +41,8 @@ class Downloader {
         
         self.downloadTask = initTask ?? DownloadTask.fromDownloadInfo(downloadInfo!)
         let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 60
+        configuration.timeoutIntervalForResource = 300
         
         self.session = URLSession(
             configuration: configuration,
@@ -65,9 +69,12 @@ class Downloader {
     
     func executeDownload() {
         if status.isInProgress { return }
+        NSLog("\(Downloader.TAG) Starting download for task id: \(String(describing: downloadTask.id)) with URL: \(downloadTask.url)")
         
         guard let session = session else { return }
-        
+
+        NSLog("\(Downloader.TAG) URLSession created for task id: \(String(describing: downloadTask.id))")
+
         downloadTask = downloadTask.copy(downloadStatus: .inProgress)
         
         if downloadTask.url.isEmpty {
@@ -76,7 +83,9 @@ class Downloader {
             )
             return
         }
-        
+
+        NSLog("\(Downloader.TAG) Download task created for task id: \(String(describing: downloadTask.id))")
+
         guard let url = URL(string: downloadTask.url) else {
             factoryError(
                 message: "Invalid URL: \(downloadTask.url) for task id: \(String(describing: downloadTask.id))"
@@ -84,11 +93,18 @@ class Downloader {
             return
         }
         
+        NSLog("\(Downloader.TAG) Starting download task for task id: \(String(describing: downloadTask.id)) with URL: \(downloadTask.url)")
+
         let request = URLRequest(url: url)
         
         let task = session.downloadTask(with: request) {
             [weak self] tempUrl, response, error in
-            guard let self = self else { return }
+            guard let self = self else {
+                NSLog("\(Downloader.TAG) Download completion handler called but self is nil for task id: \(String(describing: self?.downloadTask.id))")
+                return
+            }
+            
+            NSLog("\(Downloader.TAG) Download complete but temporary file URL is nil for task id: \(String(describing: self.downloadTask.id))")
             
             if let error = error {
                 self.factoryError(
@@ -130,7 +146,9 @@ class Downloader {
         self.downloadTaskNative = task
         startTradeProgress()
 
-        task.resume()
+        NSLog("\(Downloader.TAG) Download task started for task id: \(String(describing: downloadTask.id))")
+
+        self.downloadTaskNative?.resume()
     }
     
     private func checkPermissionAndSave(
@@ -232,6 +250,7 @@ class Downloader {
             throw error
         }
     }
+    
     
     func executePause() {
         if status.isInProgress {
