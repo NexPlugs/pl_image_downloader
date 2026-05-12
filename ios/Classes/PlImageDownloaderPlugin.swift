@@ -43,7 +43,9 @@ public class PlImageDownloaderPlugin: NSObject, FlutterPlugin {
             arguments: call.arguments as? [String: Any],
             result: result
         ) { error in
-            print("DownloadHandler error: \(error)")
+            DispatchQueue.main.async {
+                result(FlutterError(code: "DownloadHandlerError", message: error, details: nil))
+            }
         }
     }
 }

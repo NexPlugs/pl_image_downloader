@@ -256,6 +256,8 @@ class Downloader {
     }
     
     func cancel() {
+        stopTradeProgress()
+        
         downloadTaskNative?.cancel()
         downloadTask = downloadTask.copy(downloadStatus: .canceled)
     }

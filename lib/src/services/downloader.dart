@@ -40,6 +40,48 @@ class Downloader {
     }
   }
 
+  ///Download Pause
+  ///This method is used to pause the download task.
+  ///@param id The id of the download task.
+  ///@return A future that completes when the download task is paused.
+  Future<bool> downloadPause(int id) async {
+    try {
+      await DownloadChannel.downloadPause(id);
+      return true;
+    } catch (e) {
+      Logger.e(tag, "[DownloadPause] Error: $e");
+      return false;
+    }
+  }
+
+  ///Download Resume
+  ///This method is used to resume the download task.
+  ///@param id The id of the download task.
+  ///@return A future that completes when the download task is resumed.
+  Future<bool> downloadResume(int id) async {
+    try {
+      await DownloadChannel.downloadResume(id);
+      return true;
+    } catch (e) {
+      Logger.e(tag, "[DownloadResume] Error: $e");
+      return false;
+    }
+  }
+
+  ///Download Cancel
+  ///This method is used to cancel the download task.
+  ///@param id The id of the download task.
+  ///@return A future that completes when the download task is canceled.
+  Future<bool> downloadCancel(int id) async {
+    try {
+      await DownloadChannel.downloadCancel(id);
+      return true;
+    } catch (e) {
+      Logger.e(tag, "[DownloadCancel] Error: $e");
+      return false;
+    }
+  }
+
   ///Watch Progress
   ///This method is used to watch the progress of the download task.
   ///@param listener The callback function to handle the progress of the download task.

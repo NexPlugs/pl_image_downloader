@@ -9,6 +9,12 @@ public enum ChannelTag {
     
     static let download = "download"
     
+    static let downloadPause = "download_pause"
+    
+    static let downloadResume = "download_resume"
+    
+    static let downloadCancel = "download_cancel"
+    
     static let downloadConfig = "download_config"
     
     static let downloadServiceTag = "download_service_tag"
