@@ -227,7 +227,7 @@ class _MyAppState extends State<MyApp> {
               ElevatedButton.icon(
                 onPressed: _isInitialized && !_isDownloading
                     ? () => _downloadImage(
-                        'https://images.pexels.com/photos/35368876/pexels-photo-35368876.jpeg',
+                        'https://eoimages.gsfc.nasa.gov/images/imagerecords/73000/73909/world.topo.bathy.200412.3x21600x10800.jpg',
                         fileName:
                             'sample_image_${DateTime.now().millisecondsSinceEpoch}.jpg',
                       )

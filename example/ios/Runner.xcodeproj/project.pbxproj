@@ -16,6 +16,9 @@
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
+		AF12224A2FB7148200EC5315 /* DynamicIlandCRUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1222492FB7147A00EC5315 /* DynamicIlandCRUD.swift */; };
+		AF12224C2FB7149200EC5315 /* DynamicIlandObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF12224B2FB7148B00EC5315 /* DynamicIlandObserver.swift */; };
+		AF12224E2FB7149800EC5315 /* DynamicIlandModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF12224D2FB7149800EC5315 /* DynamicIlandModels.swift */; };
 		AF24D8B42FB185CA00F47105 /* DownloadInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D8AF2FB185CA00F47105 /* DownloadInfo.swift */; };
 		AF24D8B52FB185CA00F47105 /* DownloadResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D8B02FB185CA00F47105 /* DownloadResult.swift */; };
 		AF24D8B62FB185CA00F47105 /* DownloadConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF24D8AE2FB185CA00F47105 /* DownloadConfiguration.swift */; };
@@ -72,6 +75,9 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9A12787966CE1017AB71A2A2 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AF1222492FB7147A00EC5315 /* DynamicIlandCRUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicIlandCRUD.swift; sourceTree = "<group>"; };
+		AF12224B2FB7148B00EC5315 /* DynamicIlandObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicIlandObserver.swift; sourceTree = "<group>"; };
+		AF12224D2FB7149800EC5315 /* DynamicIlandModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicIlandModels.swift; sourceTree = "<group>"; };
 		AF24D8AA2FB185CA00F47105 /* DownloadMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadMode.swift; sourceTree = "<group>"; };
 		AF24D8AB2FB185CA00F47105 /* MimTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MimTypes.swift; sourceTree = "<group>"; };
 		AF24D8AD2FB185CA00F47105 /* DownloadCallBack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadCallBack.swift; sourceTree = "<group>"; };
@@ -182,6 +188,16 @@
 			path = Runner;
 			sourceTree = "<group>";
 		};
+		AF1222482FB7144B00EC5315 /* DynamicIland */ = {
+			isa = PBXGroup;
+			children = (
+				AF12224D2FB7149800EC5315 /* DynamicIlandModels.swift */,
+				AF12224B2FB7148B00EC5315 /* DynamicIlandObserver.swift */,
+				AF1222492FB7147A00EC5315 /* DynamicIlandCRUD.swift */,
+			);
+			path = DynamicIland;
+			sourceTree = "<group>";
+		};
 		AF24D8AC2FB185CA00F47105 /* Enum */ = {
 			isa = PBXGroup;
 			children = (
@@ -216,6 +232,7 @@
 		AF24D8BF2FB1860C00F47105 /* Service */ = {
 			isa = PBXGroup;
 			children = (
+				AF1222482FB7144B00EC5315 /* DynamicIland */,
 				AF24D9AF2FB186BE00F47105 /* DownloadBridge.swift */,
 				AF24D9B02FB186BE00F47105 /* Downloader.swift */,
 				AF24D9B12FB186BE00F47105 /* DownloadHandler.swift */,
@@ -457,8 +474,11 @@
 				AF24D9B42FB186BE00F47105 /* DownloadHandler.swift in Sources */,
 				AF24D8B62FB185CA00F47105 /* DownloadConfiguration.swift in Sources */,
 				AF24D8B72FB185CA00F47105 /* DownloadTask.swift in Sources */,
+				AF12224C2FB7149200EC5315 /* DynamicIlandObserver.swift in Sources */,
 				AF24D8BE2FB185E600F47105 /* ChannelTag.swift in Sources */,
+				AF12224E2FB7149800EC5315 /* DynamicIlandModels.swift in Sources */,
 				AF24D8B82FB185CA00F47105 /* DownloadMode.swift in Sources */,
+				AF12224A2FB7148200EC5315 /* DynamicIlandCRUD.swift in Sources */,
 				AF24D8B92FB185CA00F47105 /* MimTypes.swift in Sources */,
 				AF24D8BA2FB185CA00F47105 /* DownloadStatus.swift in Sources */,
 				AF24D8BB2FB185CA00F47105 /* DownloadCallBack.swift in Sources */,

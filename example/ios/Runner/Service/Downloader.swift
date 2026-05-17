@@ -16,6 +16,7 @@ class Downloader: NSObject, URLSessionDownloadDelegate {
     private var session: URLSession? = nil
     
     private var downloadTaskNative: URLSessionDownloadTask? = nil
+    private var progressTimer: Timer?
     private var downloadCallBack: ((DownloadTask) -> Void)? = nil
     
     private(set) var downloadTask: DownloadTask {
@@ -28,7 +29,7 @@ class Downloader: NSObject, URLSessionDownloadDelegate {
         downloadTask.downloadStatus
     }
     
-    
+
     
     init(
         downloadInfo: DownloadInfo? = nil,
@@ -72,7 +73,7 @@ class Downloader: NSObject, URLSessionDownloadDelegate {
         if status.isInProgress { return }
         
         guard let session = session else { return }
-        
+
         downloadTask = downloadTask.copy(downloadStatus: .inProgress)
         
         if downloadTask.url.isEmpty {
@@ -81,7 +82,7 @@ class Downloader: NSObject, URLSessionDownloadDelegate {
             )
             return
         }
-        
+
         guard let url = URL(string: downloadTask.url) else {
             factoryError(
                 message: "Invalid URL: \(downloadTask.url) for task id: \(String(describing: downloadTask.id))"
@@ -89,13 +90,55 @@ class Downloader: NSObject, URLSessionDownloadDelegate {
             return
         }
         
-        
+
         let request = URLRequest(url: url)
         
-        let task = session.downloadTask(with: request)
+        let task = session.downloadTask(with: request) {
+            [weak self] tempUrl, response, error in
+            guard let self = self else { return }
+            
+            NSLog("\(Downloader.TAG) Download complete but temporary file URL is nil for task id: \(String(describing: self.downloadTask.id))")
+            
+            if let error = error {
+                self.factoryError(
+                    message: "Download failed with error: \(error.localizedDescription) for task id: \(String(describing: self.downloadTask.id))"
+                )
+                return
+            }
+            
+            guard let tempUrl = tempUrl else {
+                self.factoryError(
+                    message: "Download failed: Temporary file URL is nil for task id: \(String(describing: self.downloadTask.id))"
+                )
+                return
+            }
+            
+            guard let data = try? Data(contentsOf: tempUrl),
+                  let image = UIImage(data: data) else {
+                self.factoryError(
+                    message: "Download failed: Unable to read downloaded data as image for task id: \(String(describing: self.downloadTask.id))"
+                )
+                return
+            }
+            
+            self.checkPermissionAndSave(
+                image: image,
+                fileName: self.downloadTask.fileName,
+                saveSuccess: { savedPath in
+                    self.downloadTask = self.downloadTask.copy(
+                        destinationPath: savedPath,
+                    ).success()
+                },
+                saveFailed: { error in
+                    self.factoryError(message: error)
+                }
+            )
+        }
+        
         // Keep a reference if you intend to pause/resume/cancel later
         self.downloadTaskNative = task
-        
+        startTradeProgress()
+
         self.downloadTaskNative?.resume()
     }
     
@@ -140,6 +183,26 @@ class Downloader: NSObject, URLSessionDownloadDelegate {
         }
     }
     
+    private func startTradeProgress() {
+        if !status.isInProgress { return }
+        
+        stopTradeProgress()
+        
+        progressTimer = Timer.scheduledTimer(
+            withTimeInterval: 1.0,
+            repeats: true
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            let progress = self.getProgress()
+            print("\(Downloader.TAG) progressTimer progress: \(progress) for task id: \(String(describing: self.downloadTask.id))")
+            self.downloadTask = self.downloadTask.copy(progress: progress)
+        }
+    }
+    
+    private func stopTradeProgress() {
+        progressTimer?.invalidate()
+        progressTimer = nil
+    }
     
     private func saveImageToDocuments(
         image: UIImage,
@@ -195,44 +258,31 @@ class Downloader: NSObject, URLSessionDownloadDelegate {
     }
     
     func cancel() {
+        stopTradeProgress()
+        
         downloadTaskNative?.cancel()
         downloadTask = downloadTask.copy(downloadStatus: .canceled)
     }
     
     
-
+    private func getProgress() -> Int {
+        guard let downloadTaskNative = downloadTaskNative else { return 0 }
+        let completed = downloadTaskNative.countOfBytesReceived
+        let total = downloadTaskNative.countOfBytesExpectedToReceive
+        
+        if total > 0 {
+            return Int((Double(completed) / Double(total)) * 100)
+        }
+        
+        let progress = Double(completed) / Double(total)
+        return Int(progress * 100)
+    }
+    
     func urlSession(
         _ session: URLSession,
         downloadTask: URLSessionDownloadTask,
-        didFinishDownloadingTo location: URL
-    ) {
+        didFinishDownloadingTo location: URL) {
         NSLog("\(Downloader.TAG) URLSession didFinishDownloadingTo location: \(location) for task id: \(String(describing: self.downloadTask.id))")
-        do {
-            
-            let data = try Data(contentsOf: location)
-            
-            guard let image = UIImage(data: data) else {
-                factoryError(message: "Cannot decode image")
-                return
-            }
-            
-            checkPermissionAndSave(
-                image: image,
-                fileName: self.downloadTask.fileName,
-                saveSuccess: { savedPath in
-                    self.downloadTask = self.downloadTask
-                        .copy(destinationPath: savedPath)
-                        .success()
-                    
-                },
-                saveFailed: { error in
-                    self.factoryError(message: error)
-                }
-            )
-        } catch {
-            factoryError(message: error.localizedDescription)
-        }
-        
     }
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
@@ -240,8 +290,5 @@ class Downloader: NSObject, URLSessionDownloadDelegate {
         let proces = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
         NSLog("\(Downloader.TAG) URLSession didWriteData bytesWritten: \(bytesWritten) totalBytesWritten: \(totalBytesWritten) totalBytesExpectedToWrite: \(totalBytesExpectedToWrite) progress: \(proces) for task id: \(String(describing: self.downloadTask.id))")
         
-        self.downloadTask = self.downloadTask.copy(progress: Int(proces * 100))
-        
     }
 }
-
