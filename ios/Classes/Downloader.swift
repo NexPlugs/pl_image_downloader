@@ -10,7 +10,7 @@ import Flutter
 let DOWNLOAD_DELAY: UInt64 = 1_000_000_000
 
 // Downloader is responsible for managing the download process of a single DownloadTask, including starting, pausing, resuming, and canceling the download. It also handles progress updates and saving the downloaded image to the photo library or documents directory based on permissions.
-class Downloader {
+class Downloader: NSObject, URLSessionDownloadDelegate {
     static private let TAG = "Downloader"
     
     private var session: URLSession? = nil
@@ -40,17 +40,19 @@ class Downloader {
         print("\(Downloader.TAG) init with downloadInfo: \(String(describing: downloadInfo)) initTask: \(String(describing: initTask))")
         
         self.downloadTask = initTask ?? DownloadTask.fromDownloadInfo(downloadInfo!)
+        
+        super.init()
+        
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 60
         configuration.timeoutIntervalForResource = 300
         
         self.session = URLSession(
             configuration: configuration,
-            delegate: nil,
+            delegate: self,
             delegateQueue: .main
         )
     }
-    
     
     @discardableResult
     func setDownloadCallBack(
@@ -274,5 +276,19 @@ class Downloader {
         
         let progress = Double(completed) / Double(total)
         return Int(progress * 100)
+    }
+    
+    func urlSession(
+        _ session: URLSession,
+        downloadTask: URLSessionDownloadTask,
+        didFinishDownloadingTo location: URL) {
+        NSLog("\(Downloader.TAG) URLSession didFinishDownloadingTo location: \(location) for task id: \(String(describing: self.downloadTask.id))")
+    }
+    
+    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+        
+        let proces = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+        NSLog("\(Downloader.TAG) URLSession didWriteData bytesWritten: \(bytesWritten) totalBytesWritten: \(totalBytesWritten) totalBytesExpectedToWrite: \(totalBytesExpectedToWrite) progress: \(proces) for task id: \(String(describing: self.downloadTask.id))")
+        
     }
 }
