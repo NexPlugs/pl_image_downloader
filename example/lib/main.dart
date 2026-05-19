@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:pl_image_downloader/pl_image_downloader.dart';
 
 void main() {
-  runApp(const MyApp());
+    runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
